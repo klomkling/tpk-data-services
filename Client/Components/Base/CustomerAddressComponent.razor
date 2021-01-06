@@ -1,0 +1,149 @@
+@inherits CustomerAddressComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal WarningMessage="@WarningMessage"
+                      WarningResponse="@HandleWarningResponse"
+                      @bind-IsShowWarning="@IsShowWarning"/>
+
+        <DxDataGrid CustomData="@LoadCustomerAddresses"
+                    KeyFieldName="@KeyFieldName"
+                    CssClass="@CssClass"
+                    PageSize="@PageSize"
+                    PageIndex="@PageIndex"
+                    SelectionMode="@SelectionMode"
+                    SelectAllMode="@SelectAllMode"
+                    ShowFilterRow="IsShowFilterRow"
+                    RowClick="@OnRowClick"
+                    LayoutRestoring="@OnLayoutRestoring"
+                    PagerPageSizeSelectorVisible="true"
+                    PagerAllDataRowsItemVisible="true"
+                    PagerAllowedPageSizes="@AllowedPageSizes"
+                    T="@CustomerAddress"
+                    @bind-MultipleSelectedDataRows="@SelectedCollection"
+                    @ref="@Grid">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(CustomerAddress.Name)"
+                                  Caption="Name"/>
+                <DxDataGridComboBoxColumn Field="@nameof(DataEditContext.AddressType)" 
+                                          Caption="Address Type"
+                                          DataAsync="@GetAddressTypeAsync"
+                                          TextFieldName="@nameof(TgAddressTypes.DisplayName)"
+                                          ValueFieldName="@nameof(TgAddressTypes.Value)"/>
+                <DxDataGridCheckBoxColumn Field="@nameof(CustomerAddress.IsDefault)"
+                                          Caption="Default?"
+                                          TextAlignment="DataGridTextAlign.Center"
+                                          FilterTextChecked="Default"
+                                          FilterTextUnchecked="Normal"
+                                          Width="100px"/>
+                <DxDataGridColumn Field="@nameof(CustomerAddress.Recipient)"
+                                  Caption="Recipient"/>
+                <DxDataGridColumn Field="@nameof(CustomerAddress.Address)"
+                                  Caption="Address"/>
+                <DxDataGridColumn Field="@nameof(CustomerAddress.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Name"/>
+                        <ValidationMessage For="() => DataEditContext.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Address Type" ColSpanMd="3">
+                    <Template>
+                        <DxComboBox Data="@AddressTypeCollection"
+                                    ValueFieldName="@nameof(TgAddressTypes.Value)"
+                                    TextFieldName="@nameof(TgAddressTypes.DisplayName)"
+                                    CssClass="normal-combobox"
+                                    @bind-Value="@DataEditContext.AddressType"/>
+                        <ValidationMessage For="() => DataEditContext.AddressType"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Default?" ColSpanMd="3">
+                    <Template>
+                        <DxComboBox Data="@DefaultDropdown"
+                                    CssClass="normal-combobox"
+                                    @bind-Value="@DataEditContext.IsDefaultName"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Recipient" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Recipient"/>
+                        <ValidationMessage For="() => DataEditContext.Recipient"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Address" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Address"/>
+                        <ValidationMessage For="() => DataEditContext.Address"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Sub-District" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.SubDistrict"/>
+                        <ValidationMessage For="() => DataEditContext.SubDistrict"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="District" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.District"/>
+                        <ValidationMessage For="() => DataEditContext.District"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Province" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Province"/>
+                        <ValidationMessage For="() => DataEditContext.Province"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Postal Code" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.PostalCode"/>
+                        <ValidationMessage For="() => DataEditContext.PostalCode"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Remark" ColSpanMd="12">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Remark"/>
+                        <ValidationMessage For="() => DataEditContext.Remark"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

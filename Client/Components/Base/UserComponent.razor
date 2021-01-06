@@ -1,0 +1,103 @@
+@inherits UserComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid @ref="@Grid"
+                     T="@User"
+                     CustomData="@LoadUsers"
+                     KeyFieldName="@KeyFieldName"
+                     CssClass="@CssClass"
+                     PageIndex="@PageIndex"
+                     PageSize="@PageSize"
+                     SelectionMode="@SelectionMode"
+                     SelectAllMode="@SelectAllMode"
+                     @bind-MultipleSelectedDataRows="@SelectedCollection"
+                     ShowFilterRow="IsShowFilterRow"
+                     RowClick="@OnRowClick"
+                     LayoutRestoring="@OnLayoutRestoring"
+                     PagerPageSizeSelectorVisible="true"
+                     PagerAllDataRowsItemVisible="true"
+                     PagerAllowedPageSizes="@AllowedPageSizes">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(User.Username)" Caption="Username"/>
+                <DxDataGridColumn Field="@nameof(User.Email)" Caption="Email"/>
+                <DxDataGridComboBoxColumn Field="@nameof(User.RoleId)"
+                                          Caption="Role"
+                                          Data="@RoleCollection"
+                                          ValueFieldName="@nameof(UserRole.RoleId)"
+                                          TextFieldName="@nameof(UserRole.RoleName)"
+                                          ListRenderMode="ListRenderMode.Virtual"
+                                          FilteringMode="DataGridFilteringMode.Contains"/>
+                <DxDataGridColumn Field="@nameof(User.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Username" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Username"/>
+                        <ValidationMessage For="() => DataEditContext.Username"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Role" ColSpanMd="6">
+                    <Template>
+                        <DxComboBox Data="@RoleCollection"
+                                    ValueFieldName="@nameof(UserRole.RoleId)"
+                                    TextFieldName="@nameof(UserRole.RoleName)"
+                                    @bind-Value="@DataEditContext.RoleId"/>
+                        <ValidationMessage For="() => DataEditContext.RoleId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Email" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Email"/>
+                        <ValidationMessage For="() => DataEditContext.Email"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Password" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.PasswordHash" Password="true" NullText="@PasswordWarning"/>
+                        <ValidationMessage For="() => DataEditContext.PasswordHash"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

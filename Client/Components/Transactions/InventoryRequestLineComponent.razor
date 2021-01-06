@@ -1,0 +1,154 @@
+@inherits InventoryRequestLineComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid CustomData="@LoadInventoryRequestLines"
+                    KeyFieldName="@KeyFieldName"
+                    CssClass="@CssClass"
+                    PageSize="@PageSize"
+                    PageIndex="@PageIndex"
+                    SelectionMode="@SelectionMode"
+                    SelectAllMode="@SelectAllMode"
+                    ShowFilterRow="IsShowFilterRow"
+                    RowClick="@OnRowClick"
+                    LayoutRestoring="@OnLayoutRestoring"
+                    PagerPageSizeSelectorVisible="true"
+                    PagerAllDataRowsItemVisible="true"
+                    PagerAllowedPageSizes="@AllowedPageSizes"
+                    T="@InventoryRequestLineWithDetail"
+                    @bind-MultipleSelectedDataRows="@SelectedCollection"
+                    @ref="@Grid">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 ReadOnly="@ReadOnly"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(InventoryRequestLineWithDetail.SupplierProductCode)"
+                                  Caption="Supplier Code"
+                                  Visible="IsSupplierCodeColumnVisible"
+                                  ShowInColumnChooser="@IsSupplierCodeColumnVisible"/>
+                <DxDataGridColumn Field="@nameof(InventoryRequestLineWithDetail.ProductCode)"
+                                  Caption="Product Code"/>
+                <DxDataGridColumn Field="@nameof(InventoryRequestLineWithDetail.Description)"
+                                  Caption="Description"/>
+                <DxDataGridColumn Field="@nameof(InventoryRequestLineWithDetail.UnitName)"
+                                  Caption="Unit" Width="100px"/>
+                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineWithDetail.Quantity)"
+                                          Caption="Quantity" Width="100px"
+                                          DisplayFormat="N"/>
+                
+                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineWithDetail.ReadyQuantity)"
+                                          Caption="Ready Qty." Width="100px"
+                                          DisplayFormat="N"
+                                          Visible="@(IsCustomerOrder == false && IsSupplierCodeColumnVisible == false)"
+                                          ShowInColumnChooser="@(IsCustomerOrder == false && IsSupplierCodeColumnVisible == false)"/>
+                
+                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineWithDetail.BookedQuantity)"
+                                          Caption="Booked Qty." Width="100px"
+                                          DisplayFormat="N"
+                                          Visible="@IsCustomerOrder"
+                                          ShowInColumnChooser="@IsCustomerOrder"/>
+
+                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineWithDetail.RemainQuantity)"
+                                          Caption="Remain. Qty." Width="100px"
+                                          DisplayFormat="N"
+                                          Visible="@IsCustomerOrder"
+                                          ShowInColumnChooser="@IsCustomerOrder"/>
+
+                @if (IsSupplierCodeColumnVisible == false)
+                {
+                    <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineWithDetail.AvailableQuantity)"
+                                              Caption="Stock Avail. Qty" Width="100px"
+                                              DisplayFormat="N"/>
+                }
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Product" ColSpanMd="@(DataEditContext.Id > 0 ? 4 : 3)">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchProducts"
+                                           EnableDropDown="true"
+                                           Context="productContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedProduct">
+                            <SelectedTemplate>
+                                @productContext.Code
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @productContext.Code
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.ProductId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Description" ColSpanMd="@(DataEditContext.Id > 0 ? 8 : 6)">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Description"/>
+                        <ValidationMessage For="() => DataEditContext.Description"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="@($"Quantity{UnitName}")" ColSpanMd="@(DataEditContext.Id > 0 ? 4 : 3)">
+                    <Template>
+                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                    MaxValue="999999.9999m"
+                                    MinValue="0m"
+                                    Increment="0.0001m"
+                                    DisplayFormat="N"
+                                    @bind-Value="@DataEditContext.Quantity"/>
+                        <ValidationMessage For="() => DataEditContext.Quantity"/>
+                    </Template>
+                </DxFormLayoutItem>
+                @if (DataEditContext.Id > 0)
+                {
+                    <DxFormLayoutItem Caption="Ready Quantity" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.ReadyQuantityDisplay"
+                                        ReadOnly="true"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Request Status" ColSpanMd="4">
+                        <Template>
+                            <DxComboBox Data="@RequestStatusCollection"
+                                        ValueFieldName="@nameof(TgOrderStatuses.Value)"
+                                        TextFieldName="@nameof(TgOrderStatuses.DisplayName)"
+                                        ReadOnly="true"
+                                        @bind-Value="@DataEditContext.Status"/>
+                            <ValidationMessage For="() => DataEditContext.Status"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                }
+                <DxFormLayoutItem ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

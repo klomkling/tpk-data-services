@@ -1,0 +1,71 @@
+@page "/sales/customer-products"
+
+@inherits CustomerProductsBase
+
+<h3>Customer Products</h3>
+
+@if (IsValidating)
+{
+    <LoadingProcess/>
+}
+else
+{
+    <div class="mt-3 card">
+        <DxFormLayout CaptionPosition="@CaptionPosition.Horizontal" ItemSizeMode="SizeMode.Medium">
+            <DxFormLayoutItem Caption="Customer Code" ColSpanMd="6">
+                <Template>
+                    <BlazoredTypeahead SearchMethod="SearchCustomers"
+                                       EnableDropDown="true"
+                                       Context="customerContext"
+                                       placeholder="Type to search..."
+                                       @bind-Value="SelectedCustomer">
+                        <SelectedTemplate>
+                            @customerContext.Code
+                        </SelectedTemplate>
+                        <ResultTemplate>
+                            @customerContext.Code (@customerContext.Name)
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </Template>
+            </DxFormLayoutItem>
+            @if ((SelectedCustomer?.Id ?? 0) > 0)
+            {
+                <DxFormLayoutItem ColSpanMd="6">
+                    <Template>
+                        <DxTextBox ReadOnly="true"
+                                   @bind-Text="@SelectedCustomer.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+            }
+        </DxFormLayout>
+    </div>
+
+    if ((SelectedCustomer?.Id ?? 0) > 0)
+    {
+        <div class="mt-3">
+            <CustomerProductComponent MasterId="@SelectedCustomer.Id"
+                                      IsDetailBusy="@IsCustomerProductPackageBusy"
+                                      @bind-SelectedId="@CustomerProductId"
+                                      @bind-SelectedCount="@CustomerProductSelectedCount"
+                                      @bind-IsBusy="@IsCustomerProductBusy"
+                                      @bind-FirstRender="@IsCustomerProductFirstRender"/>
+        </div>
+    }
+
+    if (CustomerProductId > 0 && IsCustomerProductBusy == false)
+    {
+        <div class="mt-3">
+            <DxTabs CssClass="tg-tabs">
+                <DxTabPage Text="Packages">
+                    <CustomerProductPackageComponent MasterId="@CustomerProductId"
+                                                     IsMasterBusy="@IsCustomerProductBusy"
+                                                     ToolbarCssClass="tg-detail-grid"
+                                                     @bind-IsBusy="@IsCustomerProductPackageBusy"
+                                                     @bind-FirstRender="@IsCustomerProductPackageFirstRender"/>
+                </DxTabPage>
+            </DxTabs>
+        </div>
+    }
+}
+
+<div class="pt-lg-5"></div>

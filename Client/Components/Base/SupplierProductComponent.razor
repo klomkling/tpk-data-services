@@ -1,0 +1,187 @@
+@inherits SupplierProductComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid @ref="@Grid"
+                     T="@SupplierProductWithDetail"
+                     CustomData="@LoadSupplierProducts"
+                     KeyFieldName="@KeyFieldName"
+                     CssClass="@CssClass"
+                     PageIndex="@PageIndex"
+                     PageSize="@PageSize"
+                     SelectionMode="@SelectionMode"
+                     SelectAllMode="@SelectAllMode"
+                     @bind-MultipleSelectedDataRows="@SelectedCollection"
+                     ShowFilterRow="IsShowFilterRow"
+                     RowClick="@OnRowClick"
+                     LayoutRestoring="@OnLayoutRestoring"
+                     PagerPageSizeSelectorVisible="true"
+                     PagerAllDataRowsItemVisible="true"
+                     PagerAllowedPageSizes="@AllowedPageSizes">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(SupplierProductWithDetail.Code)" Caption="Code"/>
+                <DxDataGridColumn Field="@nameof(SupplierProductWithDetail.Name)" Caption="Name"/>
+                <DxDataGridColumn Field="@nameof(SupplierProductWithDetail.ProductCode)" Caption="Our Code"/>
+                <DxDataGridColumn Field="@nameof(SupplierProductWithDetail.UnitName)" Caption="Unit"/>
+                <DxDataGridSpinEditColumn Field="@nameof(SupplierProductWithDetail.NormalPrice)"
+                                          DisplayFormat="N"
+                                          Caption="Price"
+                                          Width="100px"/>
+                <DxDataGridSpinEditColumn Field="@nameof(SupplierProductWithDetail.MoqPrice)"
+                                          DisplayFormat="N"
+                                          Caption="MOQ Price"
+                                          Width="100px"/>
+                <DxDataGridSpinEditColumn Field="@nameof(SupplierProductWithDetail.MinimumOrder)"
+                                          DisplayFormat="N"
+                                          Caption="Minimum Order"
+                                          Visible="false"/>
+                <DxDataGridCheckBoxColumn Field="@nameof(SupplierProductWithDetail.IsIncludedVat)"
+                                          Caption="Included Vat"
+                                          Width="100px"
+                                          TextAlignment="DataGridTextAlign.Center"
+                                          FilterTextChecked="Included"
+                                          FilterTextUnchecked="Not Included"/>
+                <DxDataGridCheckBoxColumn Field="@nameof(SupplierProductWithDetail.IsActive)"
+                                          Caption="Active?"
+                                          Width="100px"
+                                          TextAlignment="DataGridTextAlign.Center"
+                                          FilterTextChecked="Active"
+                                          FilterTextUnchecked="Discontinued"/>
+                <DxDataGridColumn Field="@nameof(SupplierProductWithDetail.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Code" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Code"/>
+                        <ValidationMessage For="() => DataEditContext.Code"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Name"/>
+                        <ValidationMessage For="() => DataEditContext.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Product Code" ColSpanMd="6">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchProducts"
+                                           EnableDropDown="true"
+                                           Context="productContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedProduct">
+                            <SelectedTemplate>
+                                @productContext.Code
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @productContext.Code (@productContext.Name)
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.ProductId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Unit" ColSpanMd="6">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchProductUnits"
+                                           EnableDropDown="true"
+                                           Context="unitContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedProductUnit">
+                            <SelectedTemplate>
+                                @unitContext.Name
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @unitContext.Code
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.ProductUnitId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Price" ColSpanMd="6">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.NormalPrice"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="9999.9999m"
+                                     MinValue="0m"
+                                     Increment="0.0001m"
+                                     DisplayFormat="N"/>
+                        <ValidationMessage For="() => DataEditContext.NormalPrice"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="MOQ Price" ColSpanMd="6">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.MoqPrice"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="9999.9999m"
+                                     MinValue="0m"
+                                     Increment="0.0001m"
+                                     DisplayFormat="N"/>
+                        <ValidationMessage For="() => DataEditContext.MoqPrice"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Minimum Order" ColSpanMd="6">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.MinimumOrder"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="999999.9999m"
+                                     MinValue="0m"
+                                     Increment="0.0001m"
+                                     DisplayFormat="N"/>
+                        <ValidationMessage For="() => DataEditContext.MinimumOrder"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Vat" ColSpanMd="6">
+                    <Template>
+                        <DxComboBox Data="@VatDropdown"
+                                    @bind-Value="@DataEditContext.VatStatus"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Status" ColSpanMd="6">
+                    <Template>
+                        <DxComboBox Data="@StatusDropdown"
+                                    CssClass="normal-combobox"
+                                    @bind-Value="@DataEditContext.Status"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

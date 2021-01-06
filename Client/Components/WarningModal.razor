@@ -1,0 +1,21 @@
+@inherits WarningModalBase
+
+<DxPopup HeaderText="Warning ..."
+         ShowCloseButton="false"
+         CssClass="font-bigger"
+         @bind-Visible="@IsShowWarning">
+    <p class="py-4">@WarningMessage</p>
+    <hr/>
+    <div class="text-right">
+        <DxButton RenderStyle="@ButtonRenderStyle.Secondary"
+                  SizeMode="SizeMode.Small"
+                  @onclick="@OnCancelWarningButtonClick"
+                  Text="Cancel"
+                  IconCssClass="mdi mdi-18px mdi-cancel mr-1"/>
+        <DxButton RenderStyle="@ButtonRenderStyle.Primary"
+                  SizeMode="SizeMode.Small"
+                  @onclick="@OnConfirmWarningButtonClick"
+                  Text="Confirm"
+                  IconCssClass="mdi mdi-18px mdi-check mr-1"/>
+    </div>
+</DxPopup>

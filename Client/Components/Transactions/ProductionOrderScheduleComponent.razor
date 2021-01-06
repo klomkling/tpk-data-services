@@ -1,0 +1,8 @@
+@inherits ProductionOrderScheduleComponentBase
+
+<DxScheduler StartDate="@DateTime.Today"
+             DataStorage="@DataStorage"
+             InnerComponentSizeMode="SizeMode.Medium">
+    <DxSchedulerWeekView WorkTime="@WorkTime" 
+                         ShowWorkTimeOnly="true"/>
+</DxScheduler>

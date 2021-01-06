@@ -1,0 +1,81 @@
+@inherits SystemOptionsComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid @ref="@Grid"
+                     T="@SystemOption"
+                     CustomData="@LoadSystemOptions"
+                     KeyFieldName="@KeyFieldName"
+                     CssClass="@CssClass"
+                     PageIndex="@PageIndex"
+                     PageSize="@PageSize"
+                     SelectionMode="@SelectionMode"
+                     SelectAllMode="@SelectAllMode"
+                     @bind-MultipleSelectedDataRows="@SelectedCollection"
+                     ShowFilterRow="IsShowFilterRow"
+                     RowClick="@OnRowClick"
+                     LayoutRestoring="@OnLayoutRestoring"
+                     PagerPageSizeSelectorVisible="true"
+                     PagerAllDataRowsItemVisible="true"
+                     PagerAllowedPageSizes="@AllowedPageSizes">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(SystemOption.Name)" Caption="Name"/>
+                <DxDataGridColumn Field="@nameof(SystemOption.Value)" Caption="Value"/>
+                <DxDataGridColumn Field="@nameof(SystemOption.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Name"/>
+                        <ValidationMessage For="() => DataEditContext.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Value" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Value"/>
+                        <ValidationMessage For="() => DataEditContext.Value"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

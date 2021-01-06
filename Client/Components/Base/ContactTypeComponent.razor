@@ -1,0 +1,88 @@
+@inherits ContactTypeComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid CustomData="@LoadContactTypes"
+                    KeyFieldName="@KeyFieldName"
+                    CssClass="@CssClass"
+                    PageSize="@PageSize"
+                    PageIndex="@PageIndex"
+                    SelectionMode="@SelectionMode"
+                    SelectAllMode="@SelectAllMode"
+                    ShowFilterRow="IsShowFilterRow"
+                    RowClick="@OnRowClick"
+                    LayoutRestoring="@OnLayoutRestoring"
+                    PagerPageSizeSelectorVisible="true"
+                    PagerAllDataRowsItemVisible="true"
+                    PagerAllowedPageSizes="@AllowedPageSizes"
+                    T="@ContactType"
+                    @ref="@Grid"
+                    @bind-MultipleSelectedDataRows="@SelectedCollection">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 IsPermanent="@IsPermanent"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(ContactType.Name)" 
+                                  Caption="Name"/>
+                <DxDataGridColumn Field="@nameof(ContactType.Description)" 
+                                  Caption="Description"/>
+                <DxDataGridColumn Field="@nameof(ContactType.DeletedStatus)" 
+                                  TextAlignment="DataGridTextAlign.Center"
+                                  Caption="Status"
+                                  Width="80px" 
+                                  Visible="@IsAdmin" 
+                                  ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox ReadOnly="@DataEditContext.IsPermanent" 
+                                   @bind-Text="@DataEditContext.Name"/>
+                        <ValidationMessage For="() => DataEditContext.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Description" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Description"/>
+                        <ValidationMessage For="() => DataEditContext.Description"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

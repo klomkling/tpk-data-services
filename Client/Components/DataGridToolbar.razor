@@ -1,0 +1,47 @@
+@inherits DataGridToolbarBase
+
+<DxToolbar ItemRenderStyleMode="ToolbarRenderStyleMode.Plain" ItemSizeMode="SizeMode.Small" CssClass="@CssClass">
+
+    <DxToolbarItem Text="New"
+                   BeginGroup="true"
+                   Click="@OnAddButtonClick"
+                   IconCssClass="mdi mdi-18px mdi-file-outline"
+                   Enabled="@(IsBusy == false && CanCreate)"
+                   CssClass="font-bigger"
+                   Visible="@(IsAddButtonVisible && AddButtonVisible && ReadOnly == false)"/>
+    <DxToolbarItem Text="Edit"
+                   Click="@OnEditButtonClick"
+                   IconCssClass="mdi mdi-18px mdi-file-edit-outline"
+                   Enabled="@(IsBusy == false && SelectedCount == 1 && CanEdit)"
+                   CssClass="font-bigger"
+                   Visible="@(IsEditButtonVisible && EditButtonVisible && ReadOnly == false)"/>
+    <DxToolbarItem Text="Delete"
+                   Click="@OnDeleteButtonClick"
+                   IconCssClass="mdi mdi-18px mdi-delete-outline"
+                   Enabled="@(IsBusy == false && SelectedCount >= 1 && IsPermanent == false && CanDelete)"
+                   CssClass="font-bigger"
+                   Visible="@(IsDeleteButtonVisible && DeleteButtonVisible && ReadOnly == false)"/>
+    <DxToolbarItem Text="Restore"
+                   Click="@OnRestoreButtonClick"
+                   BeginGroup="true"
+                   IconCssClass="mdi mdi-18px mdi-restore"
+                   Enabled="@(IsBusy == false && SelectedCount >= 1 && IsPermanent == false && CanRestore)"
+                   CssClass="font-bigger"
+                   Visible="@(IsRestoreButtonVisible && RestoreButtonVisible && ReadOnly == false)"/>
+
+    @ChildContent
+
+    <DxToolbarItem BeginGroup="true"
+                   Alignment="ToolbarItemAlignment.Right"
+                   Tooltip="Show filter row"
+                   Click="@OnFilterButtonClick"
+                   IconCssClass="mdi mdi-18px mdi-filter-outline"
+                   Enabled="@(IsBusy == false)"/>
+
+    @if (IsShowColumnChooser)
+    {
+        <DxDataGridColumnChooserToolbarItem BeginGroup="true"
+                                            Alignment="ToolbarItemAlignment.Right"
+                                            Tooltip="Column chooser"/>
+    }
+</DxToolbar>

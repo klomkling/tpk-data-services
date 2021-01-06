@@ -1,0 +1,124 @@
+@inherits InventoryReceiptImportComponentBase
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <DxDataGrid DataAsync="@LoadDataAsync"
+                CssClass="tg-grid"
+                HtmlRowDecoration="@OnHtmlRowDecoration">
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.ProductCode)"
+                          Caption="Product Code"/>
+        <DxDataGridSpinEditColumn Field="@nameof(ImportInventoryLine.PackageNumber)"
+                                  Caption="Package No."
+                                  Width="100px"
+                                  DisplayFormat="N0"/>
+        <DxDataGridSpinEditColumn Field="@nameof(ImportInventoryLine.Quantity)"
+                                  Caption="Quantity"
+                                  Width="100px"
+                                  DisplayFormat="N"/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.LotNumber)"
+                          Caption="Lot Number"/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.PalletNo)"
+                          Caption="Pallet No."/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.PackageCode)"
+                          Caption="Package Code"/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.StockLocation)"
+                          Caption="Location"/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.StockroomName)"
+                          Caption="Stockroom"/>
+        <DxDataGridColumn Field="@nameof(ImportInventoryLine.Reason)"
+                          Caption="Reason"/>
+    </DxDataGrid>
+    
+    <div class="mt-3 text-center">
+        <DxButton RenderStyle="@ButtonRenderStyle.Primary"
+                  SizeMode="SizeMode.Small"
+                  IconCssClass="mdi mdi-18px mdi-content-save-outline mr-1"
+                  CssClass="ml-2"
+                  Text="Confirm Import"
+                  Click="@ConfirmImport"
+                  Enabled="@(ConfirmClicked == false)"/>
+        <DxButton RenderStyle="@ButtonRenderStyle.Secondary"
+                  SizeMode="SizeMode.Small"
+                  IconCssClass="mdi mdi-18px mdi-cancel mr-1"
+                  CssClass="ml-2"
+                  Text="Cancel"
+                  Click="@CancelConfirmImport"/>
+    </div>
+}
+else
+{
+    <div class="mt-3 card">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium">
+                <DxFormLayoutItem Caption="Location" ColSpanMd="4">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchStockLocations"
+                                           EnableDropDown="true"
+                                           Context="stockLocationContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedStockLocation">
+                            <SelectedTemplate>
+                                @stockLocationContext.Location
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @stockLocationContext.Location
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.StockLocationId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Package" ColSpanMd="4">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchPackageTypes"
+                                           EnableDropDown="true"
+                                           Context="packageTypeContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedPackageType">
+                            <SelectedTemplate>
+                                @packageTypeContext.Code
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @packageTypeContext.Code
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.PackageTypeId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Pallet No." ColSpanMd="4">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.PalletNo"/>
+                        <ValidationMessage For="() => DataEditContext.PalletNo"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Import Area" ColSpanMd="12">
+                    <Template>
+                        <DxMemo ResizeMode="MemoResizeMode.Vertical"
+                                Rows="10"
+                                @bind-Text="@DataEditContext.ImportDetails"/>
+                        <ValidationMessage For="() => DataEditContext.ImportDetails"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12">
+                    <Template>
+                        <div class="mt-3 d-flex justify-content-end">
+                            <button type="submit" class="d-none"></button>
+                            <DxButton RenderStyle="@ButtonRenderStyle.Primary"
+                                      SubmitFormOnClick="true"
+                                      SizeMode="SizeMode.Small"
+                                      IconCssClass="mdi mdi-18px mdi-database-import-outline mr-1"
+                                      Text="Import"
+                                      Enabled="@(ImportClicked == false)"/>
+                            <DxButton RenderStyle="@ButtonRenderStyle.Secondary"
+                                      SizeMode="SizeMode.Small"
+                                      IconCssClass="mdi mdi-18px mdi-cancel mr-1"
+                                      CssClass="ml-2"
+                                      Text="Cancel"
+                                      Click="@CancelImportClick"/>
+                        </div>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

@@ -1,0 +1,71 @@
+@page "/purchases/supplier-products"
+
+@inherits SupplierProductsBase
+
+<h3>Supplier Products</h3>
+
+@if (IsValidating)
+{
+    <LoadingProcess/>
+}
+else
+{
+    <div class="mt-3 card">
+        <DxFormLayout CaptionPosition="@CaptionPosition.Horizontal" ItemSizeMode="SizeMode.Medium">
+            <DxFormLayoutItem Caption="Supplier Code" ColSpanMd="6">
+                <Template>
+                    <BlazoredTypeahead SearchMethod="SearchSuppliers"
+                                       EnableDropDown="true"
+                                       Context="supplierContext"
+                                       placeholder="Type to search..."
+                                       @bind-Value="SelectedSupplier">
+                        <SelectedTemplate>
+                            @supplierContext.Code
+                        </SelectedTemplate>
+                        <ResultTemplate>
+                            @supplierContext.Code
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </Template>
+            </DxFormLayoutItem>
+            @if ((SelectedSupplier?.Id ?? 0) > 0)
+            {
+                <DxFormLayoutItem ColSpanMd="6">
+                    <Template>
+                        <DxTextBox ReadOnly="true" 
+                                   @bind-Text="@SelectedSupplier.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+            }
+        </DxFormLayout>
+    </div>
+
+    if ((SelectedSupplier?.Id ?? 0) > 0)
+    {
+        <div class="mt-3">
+            <SupplierProductComponent MasterId="@SelectedSupplier.Id"
+                                      IsDetailBusy="@IsSupplierProductPackageBusy"
+                                      @bind-SelectedId="@SupplierProductId"
+                                      @bind-SelectedCount="@SupplierProductSelectedCount"
+                                      @bind-IsBusy="@IsSupplierProductBusy"
+                                      @bind-FirstRender="@IsSupplierProductFirstRender"/>
+        </div>
+    }
+    
+    if (SupplierProductId > 0 && IsSupplierProductBusy == false)
+    {
+        <div class="mt-3">
+            <DxTabs CssClass="tg-tabs">
+                <DxTabPage Text="Packages">
+                    <SupplierProductPackageComponent MasterId="@SupplierProductId"
+                                                     IsMasterBusy="@IsSupplierProductBusy"
+                                                     ToolbarCssClass="tg-detail-grid"
+                                                     @bind-IsBusy="@IsSupplierProductPackageBusy"
+                                                     @bind-FirstRender="@IsSupplierProductPackageFirstRender"/>
+                </DxTabPage>
+            </DxTabs>
+        </div>
+    }
+}
+
+<div class="pt-lg-5"></div>

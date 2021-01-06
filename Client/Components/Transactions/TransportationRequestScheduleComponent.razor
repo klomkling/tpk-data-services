@@ -1,0 +1,15 @@
+@inherits TransportationRequestScheduleComponentBase
+
+<DxScheduler StartDate="@DateTime.Today"
+             DataStorage="@DataStorage"
+             InnerComponentSizeMode="SizeMode.Medium">
+    <DxSchedulerWeekView WorkTime="@WorkTime"
+                         ShowWorkTimeOnly="true">
+        <HorizontalAppointmentTemplate>
+            <div class="card shadow-sm p-1 bg-primary">
+                <div>@context.Appointment.Subject</div>
+                <div><small>@context.Appointment.Description</small></div>
+            </div>
+        </HorizontalAppointmentTemplate>
+    </DxSchedulerWeekView>
+</DxScheduler>

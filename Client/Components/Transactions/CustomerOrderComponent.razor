@@ -1,0 +1,246 @@
+@inherits CustomerOrderComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid @ref="@Grid"
+                     T="@CustomerOrderWithDetail"
+                     CustomData="@LoadCustomerOrders"
+                     KeyFieldName="@KeyFieldName"
+                     CssClass="@CssClass"
+                     PageSize="@PageSize"
+                     PageIndex="@PageIndex"
+                     SelectionMode="@SelectionMode"
+                     SelectAllMode="@SelectAllMode"
+                     @bind-MultipleSelectedDataRows="@SelectedCollection"
+                     ShowFilterRow="IsShowFilterRow"
+                     RowClick="@OnRowClick"
+                     LayoutRestoring="@OnLayoutRestoring"
+                     PagerPageSizeSelectorVisible="true"
+                     PagerAllDataRowsItemVisible="true"
+                     PagerAllowedPageSizes="@AllowedPageSizes">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 IsPermanent="@(CanGenerateRequest == false)"
+                                 CanRestore="@CanRestore">
+                    <DxToolbarItem Text="Generate Inventory Request"
+                                   Click="@GenerateInventoryRequest"
+                                   IconCssClass="mdi mdi-18px mdi-file-move-outline"
+                                   Enabled="@(IsBusy == false)"
+                                   CssClass="font-bigger"
+                                   Visible="@CanEdit"/>
+                </DataGridToolbar>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.OrderNumber)" Caption="No.">
+                    <DisplayTemplate>
+                        @{
+                            var orderNumb = $"{((CustomerOrderWithDetail) context).OrderNumber:000000}";
+                            <span>@orderNumb</span>
+                        }
+                    </DisplayTemplate>
+                </DxDataGridColumn>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.CustomerReference)"
+                                  Caption="Customer PO."
+                                  Width="100px"/>
+                <DxDataGridDateEditColumn Field="@nameof(CustomerOrderWithDetail.OrderDate)"
+                                          DisplayFormat="dd/MM/yyyy" Caption="Date"/>
+                <DxDataGridDateEditColumn Field="@nameof(CustomerOrderWithDetail.DueDate)"
+                                          DisplayFormat="dd/MM/yyyy" Caption="Due Date"/>
+                <DxDataGridDateEditColumn Field="@nameof(CustomerOrderWithDetail.CompletedDate)"
+                                          DisplayFormat="dd/MM/yyyy" Caption="Completed Date" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.StatusName)"
+                                  Caption="Status"
+                                  Width="100px"/>
+                <DxDataGridDateEditColumn Field="@nameof(CustomerOrderWithDetail.StatusDate)"
+                                          DisplayFormat="dd/MM/yyyy" Caption="Status Date" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.CustomerReference)"
+                                  Caption="Reference"/>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.OurReference)"
+                                  Caption="Our Ref."
+                                  Visible="false"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.Amount)"
+                                          Caption="Amount" Width="100px" Visible="false"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.DiscountRate)"
+                                          Caption="Discount Rate" Width="100px" Visible="false"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.DiscountAmount)"
+                                          Caption="Discount" Width="100px" Visible="false"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.NetAmount)"
+                                          Caption="Net Amount" Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.VatRate)"
+                                          Caption="Vat Rate (%)" Width="80px" Visible="false"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.VatAmount)"
+                                          Caption="VAT" Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(CustomerOrderWithDetail.GrandTotal)"
+                                          Caption="Grand Total" Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.Comment)"
+                                  Caption="Comment" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.InventoryRequestNumber)"
+                                  Caption="Request Number">
+                    <DisplayTemplate>
+                        @{
+                            var orderNumber = ((CustomerOrderWithDetail) context).InventoryRequestNumber;
+                            var orderNumb = orderNumber > 0 ? $"{orderNumber:000000}" : null;
+                            <span>@orderNumb</span>
+                        }
+                    </DisplayTemplate>
+                </DxDataGridColumn>
+                <DxDataGridColumn Field="@nameof(CustomerOrderWithDetail.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Order No." ColSpanMd="3" CssClass="@(ComponentMode == ComponentMode.Add ? "with-tooltip" : null)">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.OrderNumberDisplay"
+                                    ReadOnly="true"/>
+                        <ValidationMessage For="() => DataEditContext.OrderNumber"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Customer PO." ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.CustomerReference"/>
+                        <ValidationMessage For="() => DataEditContext.CustomerReference"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Our Reference" ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.OurReference"/>
+                        <ValidationMessage For="() => DataEditContext.OurReference"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Date" ColSpanMd="3">
+                    <Template>
+                        <DxDateEdit @bind-Date="@DataEditContext.OrderDate"
+                                     DisplayFormat="dd/MM/yyyy"
+                                     Format="dd/MM/yyyy"
+                                     ReadOnly="true"/>
+                        <ValidationMessage For="() => DataEditContext.OrderDate"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Due Date" ColSpanMd="3">
+                    <Template>
+                        <DxDateEdit @bind-Date="@DataEditContext.DueDate"
+                                     DisplayFormat="dd/MM/yyyy"
+                                     Format="dd/MM/yyyy"/>
+                        <ValidationMessage For="() => DataEditContext.DueDate"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Order Status" ColSpanMd="3">
+                    <Template>
+                        <DxComboBox Data="@OrderStatusCollection"
+                                    ValueFieldName="@nameof(TgOrderStatuses.Value)"
+                                    TextFieldName="@nameof(TgOrderStatuses.DisplayName)"
+                                    CssClass="normal-combobox"
+                                    @bind-Value="@DataEditContext.Status"/>
+                        <ValidationMessage For="() => DataEditContext.Status"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Amount" ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.AmountDisplay"
+                                    ReadOnly="true"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Discount (%)" ColSpanMd="3">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.EditDiscountRate"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="100m"
+                                     MinValue="0m"
+                                     Increment="0.01m"
+                                     DisplayFormat="##0.00"/>
+                        <ValidationMessage For="() => DataEditContext.DiscountRate"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Discount Amount" ColSpanMd="3">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.EditDiscountAmount"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="999999.9999m"
+                                     MinValue="0m"
+                                     Increment="0.01m"
+                                     DisplayFormat="#,##0.00"/>
+                        <ValidationMessage For="() => DataEditContext.DiscountAmount"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Net Amount" ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.NetAmountDisplay"
+                                    ReadOnly="true"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Vat (%)" ColSpanMd="3">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.VatRate"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="100m"
+                                     MinValue="0m"
+                                     Increment="0.01m"
+                                     DisplayFormat="##0.00"/>
+                        <ValidationMessage For="() => DataEditContext.VatRate"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Vat Amount" ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.VatAmountDisplay"
+                                    ReadOnly="true"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Grand Total" ColSpanMd="3">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.GrandTotalDisplay"
+                                    ReadOnly="true"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Comment" ColSpanMd="12">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Comment"/>
+                        <ValidationMessage For="() => DataEditContext.Comment"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             SaveAndCloseOnlyWhenAdd="true"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose">
+                            <span class="mr-auto help-text @(ComponentMode == ComponentMode.Edit ? "d-none" : null)">* Auto-generate after saved.</span>
+                        </EditFormButtonGroup>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

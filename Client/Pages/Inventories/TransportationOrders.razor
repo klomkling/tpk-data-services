@@ -1,0 +1,18 @@
+@page "/inventories/transportation-orders"
+
+@inherits TransportationOrdersBase
+
+<h3>Transportation Orders</h3>
+
+@if (IsValidating)
+{
+    <LoadingProcess/>
+}
+else
+{
+    <div class="mt-3">
+        <TransportationOrderComponent />
+    </div>
+}
+
+<div class="pt-lg-5"></div>

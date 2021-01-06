@@ -1,0 +1,40 @@
+<div class="tg-progressbar">
+    <div style="width: @_progress;">
+    </div>
+</div>
+
+@code {
+    private string _progress = "0%";
+    private double _percent;
+    private int _currentValue;
+
+    [Parameter]
+    public double Percent
+    {
+        get => _percent;
+        set
+        {
+            if (Equals(_percent, value)) return;
+            _percent = value;
+            _progress = $"{_percent:N}%";
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public int MaxValue { get; set; }
+
+    [Parameter]
+    public int CurrentValue
+    {
+        get => _currentValue;
+        set
+        {
+            if (Equals(_currentValue, value)) return;
+            _currentValue = value;
+            var percent = (double) _currentValue / (MaxValue == 0 ? _currentValue : MaxValue);
+            Percent = percent * 100d;
+        }
+    }
+
+}

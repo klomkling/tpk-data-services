@@ -1,0 +1,28 @@
+@if (_visible)
+{
+    <div class="processing-backdrop pt-md-5">
+        <div class="w-100 text-center pt-5">
+            <div class="mt-md-5">
+                <div class="mdi mdi-selection-ellipse mdi-48px mdi-spin text-white"></div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private bool _visible;
+
+    [Parameter]
+    public bool Visible
+    {
+        get => _visible;
+        set
+        {
+            if (Equals(_visible, value)) return;
+            _visible = value;
+            StateHasChanged();
+        }
+    }
+
+}

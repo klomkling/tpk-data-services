@@ -1,0 +1,92 @@
+<div class="mt-3 d-flex justify-content-end">
+    @ChildContent
+
+    <button type="submit" class="d-none"></button>
+    <DxButton RenderStyle="@ButtonRenderStyle.Primary"
+              SubmitFormOnClick="true"
+              Click="@(() => { SubmitClick = true; })"
+              Visible="@IsSaveOnlyButtonVisible"
+              SizeMode="SizeMode.Small"
+              IconCssClass="mdi mdi-18px mdi-content-save-outline mr-1"
+              Text="Save"/>
+    <DxButton RenderStyle="@ButtonRenderStyle.Primary"
+              SubmitFormOnClick="true"
+              Click="@(() => { SubmitClick = true; SaveAndClose = true; })"
+              Visible="@IsSaveAndCloseButtonVisible"
+              SizeMode="SizeMode.Small"
+              IconCssClass="mdi mdi-18px mdi-content-save-outline mr-1"
+              CssClass="ml-2"
+              Text="Save & Close"/>
+    <DxButton RenderStyle="@ButtonRenderStyle.Secondary"
+              Click="@CancelUpdateClick"
+              SizeMode="SizeMode.Small"
+              IconCssClass="mdi mdi-18px mdi-cancel mr-1"
+              CssClass="ml-2"
+              Text="Cancel"/>
+</div>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> CancelUpdateClicked { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SubmitClickChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SaveAndCloseChanged { get; set; }
+
+    [Parameter]
+    public bool SubmitClick
+    {
+        get => _submitClick;
+        set
+        {
+            if (Equals(_submitClick, value)) return;
+            _submitClick = value;
+            SubmitClickChanged.InvokeAsync(value);
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public bool SaveAndClose
+    {
+        get => _saveAndClose;
+        set
+        {
+            if (Equals(_saveAndClose, value)) return;
+            _saveAndClose = value;
+            SaveAndCloseChanged.InvokeAsync(value);
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public ComponentMode ComponentMode { get; set; }
+
+    [Parameter]
+    public bool SaveAndCloseOnlyWhenAdd { get; set; }
+
+    private bool IsSaveAndCloseButtonVisible => ComponentMode == ComponentMode.Add;
+
+    private bool IsSaveOnlyButtonVisible
+    {
+        get
+        {
+            if (ComponentMode == ComponentMode.Edit) return true;
+            return SaveAndCloseOnlyWhenAdd == false;
+        }
+    }
+
+    private void CancelUpdateClick(MouseEventArgs args)
+    {
+        CancelUpdateClicked.InvokeAsync(args);
+    }
+
+    private bool _submitClick;
+    private bool _saveAndClose;
+}

@@ -1,0 +1,150 @@
+2020-12-26 13:47:23.0325 Info Message Template Auto Format enabled
+2020-12-26 13:47:23.0670 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-26 13:47:23.1158 Info Adding target FileTarget(Name=allfile)
+2020-12-26 13:47:23.1211 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-26 13:47:23.2687 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-26 20:05:36.4968 Info Message Template Auto Format enabled
+2020-12-26 20:05:36.5286 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-26 20:05:36.5713 Info Adding target FileTarget(Name=allfile)
+2020-12-26 20:05:36.5761 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-26 20:05:36.6947 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-27 06:27:52.2691 Info Message Template Auto Format enabled
+2020-12-27 06:27:52.3047 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-27 06:27:52.3459 Info Adding target FileTarget(Name=allfile)
+2020-12-27 06:27:52.3511 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-27 06:27:52.4769 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-27 06:29:40.3732 Info Message Template Auto Format enabled
+2020-12-27 06:29:40.4040 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-27 06:29:40.4478 Info Adding target FileTarget(Name=allfile)
+2020-12-27 06:29:40.4530 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-27 06:29:40.5754 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-27 06:30:59.8127 Info Message Template Auto Format enabled
+2020-12-27 06:30:59.8474 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-27 06:30:59.8938 Info Adding target FileTarget(Name=allfile)
+2020-12-27 06:30:59.8993 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-27 06:31:00.0242 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-27 06:33:52.0372 Info Message Template Auto Format enabled
+2020-12-27 06:33:52.0693 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-27 06:33:52.1128 Info Adding target FileTarget(Name=allfile)
+2020-12-27 06:33:52.1186 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-27 06:33:52.2455 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-27 06:35:25.5028 Info Message Template Auto Format enabled
+2020-12-27 06:35:25.5338 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-27 06:35:25.5782 Info Adding target FileTarget(Name=allfile)
+2020-12-27 06:35:25.5837 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-27 06:35:25.7394 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2020-12-31 08:04:06.6017 Info Message Template Auto Format enabled
+2020-12-31 08:04:06.6556 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-31 08:04:06.7174 Info Adding target FileTarget(Name=allfile)
+2020-12-31 08:04:06.7238 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-31 08:04:06.8307 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Release/net5.0/nlog.config
+2020-12-31 08:20:56.6924 Info Message Template Auto Format enabled
+2020-12-31 08:20:56.7180 Info Loading assembly: NLog.Web.AspNetCore
+2020-12-31 08:20:56.7832 Info Adding target FileTarget(Name=allfile)
+2020-12-31 08:20:56.7902 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2020-12-31 08:20:56.9071 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Release/net5.0/nlog.config
+2021-01-01 20:43:14.9729 Info Message Template Auto Format enabled
+2021-01-01 20:43:15.1034 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-01 20:43:15.2654 Info Adding target FileTarget(Name=allfile)
+2021-01-01 20:43:15.2719 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-01 20:43:15.4239 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-01 20:44:30.0752 Info Message Template Auto Format enabled
+2021-01-01 20:44:30.1072 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-01 20:44:30.1505 Info Adding target FileTarget(Name=allfile)
+2021-01-01 20:44:30.1563 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-01 20:44:30.4287 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-01 20:45:36.5827 Info Message Template Auto Format enabled
+2021-01-01 20:45:36.6143 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-01 20:45:36.6567 Info Adding target FileTarget(Name=allfile)
+2021-01-01 20:45:36.6620 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-01 20:45:36.7705 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 05:47:39.0585 Info Message Template Auto Format enabled
+2021-01-05 05:47:39.0980 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 05:47:39.1579 Info Adding target FileTarget(Name=allfile)
+2021-01-05 05:47:39.1653 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 05:47:39.3138 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 05:48:51.5138 Info Message Template Auto Format enabled
+2021-01-05 05:48:51.5540 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 05:48:51.6101 Info Adding target FileTarget(Name=allfile)
+2021-01-05 05:48:51.6162 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 05:48:51.7276 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 12:40:50.3306 Info Message Template Auto Format enabled
+2021-01-05 12:40:50.3678 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 12:40:50.4151 Info Adding target FileTarget(Name=allfile)
+2021-01-05 12:40:50.4215 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 12:40:50.5862 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 12:46:33.1443 Info Message Template Auto Format enabled
+2021-01-05 12:46:33.1764 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 12:46:33.2223 Info Adding target FileTarget(Name=allfile)
+2021-01-05 12:46:33.2279 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 12:46:33.3495 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 12:53:00.2524 Info Message Template Auto Format enabled
+2021-01-05 12:53:00.3014 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 12:53:00.3725 Info Adding target FileTarget(Name=allfile)
+2021-01-05 12:53:00.3821 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 12:53:00.7520 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 12:54:34.5366 Info Message Template Auto Format enabled
+2021-01-05 12:54:34.5705 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 12:54:34.6253 Info Adding target FileTarget(Name=allfile)
+2021-01-05 12:54:34.6444 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 12:54:34.8274 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 13:09:11.0199 Info Message Template Auto Format enabled
+2021-01-05 13:09:11.0523 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 13:09:11.0955 Info Adding target FileTarget(Name=allfile)
+2021-01-05 13:09:11.1009 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 13:09:11.2273 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 14:37:39.6533 Info Message Template Auto Format enabled
+2021-01-05 14:37:39.6851 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 14:37:39.7290 Info Adding target FileTarget(Name=allfile)
+2021-01-05 14:37:39.7350 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 14:37:39.8747 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 14:41:01.0150 Info Message Template Auto Format enabled
+2021-01-05 14:41:01.0441 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 14:41:01.0933 Info Adding target FileTarget(Name=allfile)
+2021-01-05 14:41:01.0992 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 14:41:01.3526 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 14:46:19.2750 Info Message Template Auto Format enabled
+2021-01-05 14:46:19.3040 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 14:46:19.3509 Info Adding target FileTarget(Name=allfile)
+2021-01-05 14:46:19.3567 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 14:46:19.6126 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-05 14:48:00.7832 Info Message Template Auto Format enabled
+2021-01-05 14:48:00.8306 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-05 14:48:00.8863 Info Adding target FileTarget(Name=allfile)
+2021-01-05 14:48:00.8926 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-05 14:48:01.0381 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 05:57:00.1879 Info Message Template Auto Format enabled
+2021-01-06 05:57:00.2152 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 05:57:00.2557 Info Adding target FileTarget(Name=allfile)
+2021-01-06 05:57:00.2608 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 05:57:00.3648 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 05:58:27.5036 Info Message Template Auto Format enabled
+2021-01-06 05:58:27.5364 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 05:58:27.5916 Info Adding target FileTarget(Name=allfile)
+2021-01-06 05:58:27.5977 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 05:58:27.7263 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 06:02:26.3501 Info Message Template Auto Format enabled
+2021-01-06 06:02:26.3817 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 06:02:26.4321 Info Adding target FileTarget(Name=allfile)
+2021-01-06 06:02:26.4408 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 06:02:26.6120 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 06:12:43.6943 Info Message Template Auto Format enabled
+2021-01-06 06:12:43.7275 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 06:12:43.7925 Info Adding target FileTarget(Name=allfile)
+2021-01-06 06:12:43.7992 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 06:12:44.0038 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 09:20:01.5125 Info Message Template Auto Format enabled
+2021-01-06 09:20:01.5572 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 09:20:01.6145 Info Adding target FileTarget(Name=allfile)
+2021-01-06 09:20:01.6212 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 09:20:01.7577 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 09:23:11.1664 Info Message Template Auto Format enabled
+2021-01-06 09:23:11.2063 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 09:23:11.2574 Info Adding target FileTarget(Name=allfile)
+2021-01-06 09:23:11.2629 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 09:23:11.3773 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config
+2021-01-06 10:00:36.5652 Info Message Template Auto Format enabled
+2021-01-06 10:00:36.6095 Info Loading assembly: NLog.Web.AspNetCore
+2021-01-06 10:00:36.6616 Info Adding target FileTarget(Name=allfile)
+2021-01-06 10:00:36.6676 Warn Error has been raised. Exception: NLog.NLogConfigurationException: Target 'ownFile-web' not found for logging rule: *.
+2021-01-06 10:00:36.8007 Info Validating config: TargetNames=allfile, ConfigItems=22, FilePath=/Users/sarawut/RiderProjects/Tpk.DataServices/Server/bin/Debug/net5.0/nlog.config

@@ -1,0 +1,86 @@
+@inherits StockComponentBase
+
+<DxDataGrid CustomData="@LoadStocks"
+            KeyFieldName="@KeyFieldName"
+            CssClass="@CssClass"
+            PageSize="@PageSize"
+            PageIndex="@PageIndex"
+            SelectionMode="@SelectionMode"
+            SelectAllMode="@SelectAllMode"
+            ShowFilterRow="IsShowFilterRow"
+            LayoutRestoring="@OnLayoutRestoring"
+            PagerPageSizeSelectorVisible="true"
+            PagerAllDataRowsItemVisible="true"
+            PagerAllowedPageSizes="@AllowedPageSizes"
+            @bind-MultipleSelectedDataRows="@SelectedCollection"
+            T="@StockWithDetail"
+            @ref="@Grid">
+    <HeaderTemplate>
+        <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                         CssClass="@ToolbarCssClass"
+                         SelectedCount="@SelectedCount"
+                         RequiredClaimType="@RequiredClaimType"
+                         OnToolbarClick="@HandleToolbarResponse"
+                         ReadOnly="true">
+            <DxToolbarItem Text="Book"
+                           Click="@DoBookingProcess"
+                           IconCssClass="mdi mdi-18px mdi-bookmark-outline"
+                           Enabled="@(IsBusy == false && SelectedCount > 0)"
+                           CssClass="font-bigger" 
+                           Visible="@IsStockSelectionMode"/>
+            <DxToolbarItem Text="Cancel"
+                           Click="@CancelBookingProcess"
+                           IconCssClass="mdi mdi-18px mdi-cancel"
+                           CssClass="font-bigger"
+                           Visible="@IsStockSelectionMode"/>
+        </DataGridToolbar>
+    </HeaderTemplate>
+
+    <Columns>
+        @* <DxDataGridSelectionColumn Width="60px"/> *@
+        <DxDataGridColumn Field="@nameof(StockWithDetail.ProductCode)"
+                          Caption="Product Code"
+                          Visible="false"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.ProductName)"
+                          Caption="Product Name"
+                          Visible="false"/>
+        <DxDataGridDateEditColumn Field="@nameof(StockWithDetail.ReceivedDate)"
+                                  DisplayFormat="dd/MM/yyyy"
+                                  Caption="Received Date"
+                                  Width="100px"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.LotNumber)"
+                          Caption="Lot Number"
+                          Width="100px"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.PalletNo)"
+                          Caption="Pallet No."
+                          Width="100px"/>
+        <DxDataGridSpinEditColumn Field="@nameof(StockWithDetail.PackageNumber)"
+                                  Caption="Package No."
+                                  DisplayFormat="N0"
+                                  Width="100px"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.PackageCode)"
+                          Caption="Package"
+                          Width="100px"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.StockLocation)"
+                          Caption="Location"/>
+        <DxDataGridColumn Field="@nameof(StockWithDetail.StockroomName)"
+                          Caption="Stockroom"
+                          Visible="false"/>
+        <DxDataGridSpinEditColumn Field="@nameof(StockWithDetail.Quantity)"
+                                  Caption="Quantity"
+                                  DisplayFormat="N"
+                                  Width="100px"/>
+        <DxDataGridSpinEditColumn Field="@nameof(StockWithDetail.UsedQuantity)"
+                                  Caption="Used Qty."
+                                  DisplayFormat="N"
+                                  Width="100px"/>
+        <DxDataGridSpinEditColumn Field="@nameof(StockWithDetail.BookedQuantity)"
+                                  Caption="Booked Qty."
+                                  DisplayFormat="N"
+                                  Width="100px"/>
+        <DxDataGridSpinEditColumn Field="@nameof(StockWithDetail.AvailableQuantity)"
+                                  Caption="Aval. Qty."
+                                  DisplayFormat="N"
+                                  Width="100px"/>
+    </Columns>
+</DxDataGrid>

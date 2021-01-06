@@ -1,0 +1,164 @@
+@inherits CustomerComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid CustomData="@LoadCustomers"
+                    KeyFieldName="@KeyFieldName"
+                    CssClass="@CssClass"
+                    PageSize="@PageSize"
+                    PageIndex="@PageIndex"
+                    SelectionMode="@SelectionMode"
+                    SelectAllMode="@SelectAllMode"
+                    ShowFilterRow="IsShowFilterRow"
+                    RowClick="@OnRowClick"
+                    LayoutRestoring="@OnLayoutRestoring"
+                    PagerPageSizeSelectorVisible="true"
+                    PagerAllDataRowsItemVisible="true"
+                    PagerAllowedPageSizes="@AllowedPageSizes"
+                    @bind-MultipleSelectedDataRows="@SelectedCollection"
+                    @ref="@Grid"
+                    T="@CustomerWithDetail">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(Customer.Code)" Caption="Code"/>
+                <DxDataGridColumn Field="@nameof(Customer.Name)" Caption="Name"/>
+                <DxDataGridColumn Field="@nameof(Customer.Branch)" Caption="Branch"/>
+                <DxDataGridColumn Field="@nameof(Customer.Address)" Caption="Address" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.SubDistrict)" Caption="Sub-District" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.District)" Caption="District" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.Province)" Caption="Province" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.PostalCode)" Caption="Postal Code" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.TaxId)" Caption="Tax Id." Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.OemByCustomerId)" Caption="OEM For" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.IsAffiliatedCompany)" Caption="Affiliated?" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.Comment)" Caption="Comment" Visible="false"/>
+                <DxDataGridColumn Field="@nameof(Customer.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center" 
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Code" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Code"/>
+                        <ValidationMessage For="() => DataEditContext.Code"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Name"/>
+                        <ValidationMessage For="() => DataEditContext.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Branch" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Branch"/>
+                        <ValidationMessage For="() => DataEditContext.Branch"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Address" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Address"/>
+                        <ValidationMessage For="() => DataEditContext.Address"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Sub-Distinct" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.SubDistrict"/>
+                        <ValidationMessage For="() => DataEditContext.SubDistrict"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Distinct" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.District"/>
+                        <ValidationMessage For="() => DataEditContext.District"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Province" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Province"/>
+                        <ValidationMessage For="() => DataEditContext.Province"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Postal Code" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.PostalCode"/>
+                        <ValidationMessage For="() => DataEditContext.PostalCode"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Tax Id" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.TaxId"/>
+                        <ValidationMessage For="() => DataEditContext.TaxId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="OEM For" ColSpanMd="6">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchCustomers"
+                                           EnableDropDown="true"
+                                           Context="customerContext"
+                                           placeholder="Type to search..."
+                                           @bind-Value="SelectedOemCustomer">
+                            <SelectedTemplate>
+                                @customerContext.Code
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @customerContext.Code (@customerContext.Name)
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.OemByCustomerId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Affiliated Company?" ColSpanMd="6">
+                    <Template>
+                        <DxComboBox Data="@YesNoDropdown"
+                                    CssClass="normal-combobox"
+                                    @bind-Value="@DataEditContext.AffiliatedCompany"/>
+                        <ValidationMessage For="() => DataEditContext.IsAffiliatedCompany"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Comment" ColSpanMd="12">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Comment"/>
+                        <ValidationMessage For="() => DataEditContext.Comment"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

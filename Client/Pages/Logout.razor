@@ -1,0 +1,26 @@
+@page "/Logout"
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthStat { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.Logout();
+
+        var authState = await AuthStat;
+        var user = authState.User;
+        if (user.Identity.IsAuthenticated == false)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+}

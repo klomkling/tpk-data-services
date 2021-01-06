@@ -1,0 +1,37 @@
+@page "/purchases/suppliers"
+
+@inherits SuppliersBase
+
+<h3>Suppliers</h3>
+
+@if (IsValidating)
+{
+    <LoadingProcess/>
+}
+else
+{
+    <div class="mt-3">
+        <SupplierComponent IsDetailBusy="@IsContactBusy"
+                           @bind-SelectedId="@SupplierId"
+                           @bind-IsBusy="@IsMasterBusy"
+                           @bind-SelectedCount="@MasterSelectedCount"
+                           @bind-FirstRender="@IsMasterFirstRender"/>
+    </div>
+
+    if (SupplierId > 0 && IsMasterBusy == false)
+    {
+        <div class="mt-3">
+            <DxTabs CssClass="tg-tabs">
+                <DxTabPage Text="Contacts">
+                    <SupplierContactComponent MasterId="@SupplierId"
+                                              IsMasterBusy="@IsMasterBusy"
+                                              ToolbarCssClass="tg-detail-grid"
+                                              @bind-IsBusy="@IsContactBusy"
+                                              @bind-FirstRender="@IsContactFirstRender"/>
+                </DxTabPage>
+            </DxTabs>
+        </div>
+    }
+}
+
+<div class="pt-lg-5"></div>

@@ -1,0 +1,160 @@
+@inherits ProductPackageComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid @ref="@Grid"
+                     T="@ProductPackageWithDetail"
+                     CustomData="@LoadProductPackages"
+                     KeyFieldName="@KeyFieldName"
+                     CssClass="@CssClass"
+                     PageIndex="@PageIndex"
+                     PageSize="@PageSize"
+                     SelectionMode="@SelectionMode"
+                     SelectAllMode="@SelectAllMode"
+                     @bind-MultipleSelectedDataRows="@SelectedCollection"
+                     ShowFilterRow="IsShowFilterRow"
+                     RowClick="@OnRowClick"
+                     LayoutRestoring="@OnLayoutRestoring"
+                     PagerPageSizeSelectorVisible="true"
+                     PagerAllDataRowsItemVisible="true"
+                     PagerAllowedPageSizes="@AllowedPageSizes">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(ProductPackageWithDetail.PackageCode)" Caption="Package Code"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.Quantity)"
+                                          Caption="Contained Qty."
+                                          Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.NetWeight)"
+                                          Caption="New Wt.(kg)"
+                                          Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.GrossWeight)"
+                                          Caption="Gross Wt.(kg)"
+                                          Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridColumn Field="@nameof(ProductPackageWithDetail.Remark)" Caption="Remark"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.StockQuantity)"
+                                          Caption="Stock Qty."
+                                          TextAlignment="DataGridTextAlign.Right"
+                                          DisplayFormat="N"
+                                          Width="100px"
+                                          Visible="false"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.UsedQuantity)"
+                                          Caption="Used Qty."
+                                          TextAlignment="DataGridTextAlign.Right"
+                                          DisplayFormat="N"
+                                          Width="100px"
+                                          Visible="false"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.BookedQuantity)"
+                                          Caption="Booked Qty."
+                                          TextAlignment="DataGridTextAlign.Right"
+                                          DisplayFormat="N"
+                                          Width="100px"
+                                          Visible="false"/>
+                <DxDataGridSpinEditColumn Field="@nameof(ProductPackageWithDetail.AvailableQuantity)"
+                                          Caption="Avail. Qty."
+                                          TextAlignment="DataGridTextAlign.Right"
+                                          Width="100px"
+                                          DisplayFormat="N"/>
+                <DxDataGridColumn Field="@nameof(ProductPackageWithDetail.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Packaging" ColSpanMd="6">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchPackageTypes"
+                                           @bind-Value="SelectedPackageType"
+                                           Context="packageTypeContext"
+                                           EnableDropDown="true"
+                                           placeholder="Type to search...">
+                            <SelectedTemplate>
+                                @packageTypeContext.Code
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @packageTypeContext.Code (@packageTypeContext.Name)
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.PackageTypeId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Remark" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Remark"/>
+                        <ValidationMessage For="() => DataEditContext.Remark"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Quantity" ColSpanMd="4" BeginRow="true">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.Quantity"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="999999"
+                                     MinValue="1"
+                                     Increment="1"
+                                     DisplayFormat="N0"/>
+                        <ValidationMessage For="() => DataEditContext.Quantity"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Net Wt. (kg)" ColSpanMd="4">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.NetWeight"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="999999.99m"
+                                     MinValue="0m"
+                                     Increment="0.01m"
+                                     DisplayFormat="N"/>
+                        <ValidationMessage For="() => DataEditContext.NetWeight"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Gross Wt. (kg)" ColSpanMd="4">
+                    <Template>
+                        <DxSpinEdit @bind-Value="@DataEditContext.GrossWeight"
+                                     BindValueMode="BindValueMode.OnInput"
+                                     MaxValue="999999.99m"
+                                     MinValue="0m"
+                                     Increment="0.01m"
+                                     DisplayFormat="N"/>
+                        <ValidationMessage For="() => DataEditContext.GrossWeight"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

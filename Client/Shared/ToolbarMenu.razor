@@ -1,0 +1,84 @@
+@inject IUserService UserService
+
+<DxToolbar ItemRenderStyleMode="ToolbarRenderStyleMode.Plain" ItemSizeMode="SizeMode.Medium">
+    <Items>
+        <DxToolbarItem Text="Sales">
+            <Items>
+                <DxToolbarItem Text="Customers" NavigateUrl="/sales/customers"/>
+                <DxToolbarItem Text="Customer Products" NavigateUrl="/sales/customer-products"/>
+                <DxToolbarItem Text="Customer Orders" NavigateUrl="/sales/customer-orders"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="Purchases">
+            <Items>
+                <DxToolbarItem Text="Suppliers" NavigateUrl="/purchases/suppliers"/>
+                <DxToolbarItem Text="Supplier Products" NavigateUrl="/purchases/supplier-products"/>
+                <DxToolbarItem Text="Supplier Orders" NavigateUrl="/purchases/supplier-orders"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="Productions">
+            <Items>
+                <DxToolbarItem Text="Production Request" NavigateUrl="/productions/production-requests"/>
+                <DxToolbarItem Text="Production Order" NavigateUrl="/productions/production-orders"/>
+                <DxToolbarItem Text="Inventory Request" NavigateUrl="/productions/inventory-requests" BeginGroup="true"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="Inventories">
+            <Items>
+                <DxToolbarItem Text="Inventory Requests" NavigateUrl="/inventories/inventory-requests"/>
+                <DxToolbarItem Text="Delivery Sheets" NavigateUrl="/inventories/delivery-sheets" BeginGroup="true"/>
+                <DxToolbarItem Text="Inventory Receipts" NavigateUrl="/inventories/inventory-receipts"/>
+                <DxToolbarItem Text="Transportation Requests" NavigateUrl="/inventories/transportation-requests" BeginGroup="true"/>
+                <DxToolbarItem Text="Transportation Orders" NavigateUrl="/inventories/transportation-orders"/>
+                <DxToolbarItem Text="Stock Movements" NavigateUrl="/inventories/stock-movements" BeginGroup="true"/>
+                <DxToolbarItem Text="Stock Cards" NavigateUrl="/inventories/stock-cards" BeginGroup="true"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="References">
+            <Items>
+                <DxToolbarItem Text="Products" NavigateUrl="/references/products"/>
+                <DxToolbarItem Text="Product Groups" NavigateUrl="/references/product-categories" BeginGroup="true"/>
+                <DxToolbarItem Text="Product Lines" NavigateUrl="/references/product-lines"/>
+                <DxToolbarItem Text="Product Units" NavigateUrl="/references/product-units"/>
+                <DxToolbarItem Text="Product Colors" NavigateUrl="/references/product-colors"/>
+                <DxToolbarItem Text="Material Types" NavigateUrl="/references/material-types" BeginGroup="true"/>
+                <DxToolbarItem Text="Material Sub-Types" NavigateUrl="/references/material-sub-types"/>
+                <DxToolbarItem Text="Material Grades" NavigateUrl="/references/material-grades"/>
+                <DxToolbarItem Text="Stockrooms" NavigateUrl="/references/stockrooms" BeginGroup="true"/>
+                <DxToolbarItem Text="Stock Locations" NavigateUrl="/references/stock-locations"/>
+                <DxToolbarItem Text="Contact Types" NavigateUrl="/references/contact-types" BeginGroup="true"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="Internal">
+            <Items>
+                <DxToolbarItem Text="Tester" NavigateUrl="/admin/test" Visible="@_isAdmin"/>
+                <DxToolbarItem Text="Users" NavigateUrl="/admin/users" Visible="@_isAdmin"/>
+                <DxToolbarItem Text="Process After Import" NavigateUrl="/admin/first-import" Visible="@_isAdmin"/>
+                <DxToolbarItem Text="System Options" NavigateUrl="/internal/system-options"/>
+            </Items>
+        </DxToolbarItem>
+        <DxToolbarItem Text="@_username" BeginGroup="true" Alignment="ToolbarItemAlignment.Right">
+            <Items>
+                <DxToolbarItem Text="Log out" NavigateUrl="/logout"/>
+            </Items>
+        </DxToolbarItem>
+    </Items>
+</DxToolbar>
+
+@code
+{
+    [Parameter]
+    public string CssClass { get; set; }
+
+    private string _username;
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UserService.LoadAsync();
+        _isAdmin = UserService.IsAdminLevel;
+        _username = UserService.Username;
+
+        await base.OnInitializedAsync();
+    }
+}

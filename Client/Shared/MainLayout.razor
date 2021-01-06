@@ -1,0 +1,43 @@
+﻿@inherits LayoutComponentBase
+
+<BlazoredToasts Timeout="3"
+                IconType="new IconType()"
+                SuccessIcon="mdi mdi-36px mdi-check"/>
+
+<div class="sidebar @NavMenuCssClass">
+    <NavMenu/>
+</div>
+
+<div class="sidebar-modal-backdrop @NavMenuCssClass">
+
+</div>
+
+<div class="main">
+    <div class="top-row px-4">
+        <button class="navbar-toggler border mr-2" @onclick="ToggleNavMenu">
+            <span class="oi oi-menu" style="font-size: 1.375rem; padding: 0.25rem;"></span>
+        </button>
+        <a class="navbar-brand" href="">
+            <img src="images/TPK_Logo.png" alt="Tpk Data Services" width="80"/>
+        </a>
+
+        <ToolbarMenu/>
+    </div>
+
+    <div class="content @ContentCssClass px-4">
+        @Body
+    </div>
+</div>
+
+@code
+{
+    private bool _collapseNavMenu = true;
+
+    private string NavMenuCssClass => _collapseNavMenu ? null : "show";
+    private string ContentCssClass => _collapseNavMenu ? null : "with-sidebar";
+
+    private void ToggleNavMenu()
+    {
+        _collapseNavMenu = !_collapseNavMenu;
+    }
+}

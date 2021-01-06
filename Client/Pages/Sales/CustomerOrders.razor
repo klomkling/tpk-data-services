@@ -1,0 +1,74 @@
+@page "/sales/customer-orders"
+
+@inherits CustomerOrdersBase
+
+<h3>Customer Orders</h3>
+
+@if (IsValidating)
+{
+    <LoadingProcess/>
+}
+else
+{
+    <div class="mt-3 card">
+        <DxFormLayout CaptionPosition="@CaptionPosition.Horizontal" ItemSizeMode="SizeMode.Medium">
+            <DxFormLayoutItem Caption="Customer Code" ColSpanMd="6">
+                <Template>
+                    <BlazoredTypeahead SearchMethod="SearchCustomers"
+                                       EnableDropDown="true"
+                                       Context="customerContext"
+                                       placeholder="Type to search..."
+                                       @bind-Value="SelectedCustomer">
+                        <SelectedTemplate>
+                            @customerContext.Code
+                        </SelectedTemplate>
+                        <ResultTemplate>
+                            @customerContext.Code (@customerContext.Name)
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </Template>
+            </DxFormLayoutItem>
+            @if ((SelectedCustomer?.Id ?? 0) > 0)
+            {
+                <DxFormLayoutItem ColSpanMd="6">
+                    <Template>
+                        <DxTextBox ReadOnly="true"
+                                   @bind-Text="@SelectedCustomer.Name"/>
+                    </Template>
+                </DxFormLayoutItem>
+            }
+        </DxFormLayout>
+    </div>
+
+    if ((SelectedCustomer?.Id ?? 0) > 0)
+    {
+        <div class="mt-3">
+            <CustomerOrderComponent MasterId="@SelectedCustomer.Id"
+                                    IsDetailBusy="@IsCustomerOrderLineBusy"
+                                    @bind-SelectedId="@CustomerOrderId"
+                                    @bind-SelectedCount="@CustomerOrderSelectedCount"
+                                    @bind-IsBusy="@IsCustomerOrderBusy"
+                                    @bind-FirstRender="@IsCustomerOrderFirstRender"
+                                    @bind-RefreshDataGrid="@RefreshOrderDataGrid"/>
+        </div>
+    }
+
+    if (CustomerOrderId > 0 && IsCustomerOrderBusy == false)
+    {
+        <div class="mt-3">
+            <DxTabs CssClass="tg-tabs">
+                <DxTabPage Text="Details">
+                    <CustomerOrderLineComponent MasterId="@CustomerOrderId"
+                                                CustomerId="@(SelectedCustomer?.Id ?? 0)"
+                                                IsMasterBusy="@IsCustomerOrderBusy"
+                                                ToolbarCssClass="tg-detail-grid"
+                                                DataGridChanged="@OrderDetailChanged"
+                                                @bind-IsBusy="@IsCustomerOrderLineBusy"
+                                                @bind-FirstRender="@IsCustomerOrderLineFirstRender"/>
+                </DxTabPage>
+            </DxTabs>
+        </div>
+    }
+}
+
+<div class="pt-lg-5"></div>

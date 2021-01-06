@@ -1,0 +1,99 @@
+@inherits SupplierContactComponentBase
+
+<ProcessingSpiner Visible="@IsComponentBusy"/>
+
+@if (ComponentMode == ComponentMode.List)
+{
+    <div class="position-relative">
+        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+        </div>
+
+        <WarningModal @bind-IsShowWarning="@IsShowWarning"
+                       WarningMessage="@WarningMessage"
+                       WarningResponse="@HandleWarningResponse"/>
+
+        <DxDataGrid CustomData="@LoadSupplierContacts"
+                    KeyFieldName="@KeyFieldName"
+                    CssClass="@CssClass"
+                    PageIndex="@PageIndex"
+                    PageSize="@PageSize"
+                    SelectionMode="@SelectionMode"
+                    SelectAllMode="@SelectAllMode"
+                    ShowFilterRow="IsShowFilterRow"
+                    RowClick="@OnRowClick"
+                    LayoutRestoring="@OnLayoutRestoring"
+                    PagerPageSizeSelectorVisible="true"
+                    PagerAllDataRowsItemVisible="true"
+                    PagerAllowedPageSizes="@AllowedPageSizes"
+                    T="@SupplierContactWithDetail"
+                    @ref="@Grid"
+                    @bind-MultipleSelectedDataRows="@SelectedCollection">
+
+            <HeaderTemplate>
+                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                 CssClass="@ToolbarCssClass"
+                                 SelectedCount="@SelectedCount"
+                                 RequiredClaimType="@RequiredClaimType"
+                                 OnToolbarClick="@HandleToolbarResponse"
+                                 CanRestore="@CanRestore"/>
+            </HeaderTemplate>
+
+            <Columns>
+                @* <DxDataGridSelectionColumn Width="60px"/> *@
+                <DxDataGridColumn Field="@nameof(SupplierContactWithDetail.ContactTypeName)" Caption="Contact Type"/>
+                <DxDataGridColumn Field="@nameof(SupplierContactWithDetail.ContactData)" Caption="Contact Data"/>
+                <DxDataGridColumn Field="@nameof(SupplierContactWithDetail.Remark)" Caption="Remark"/>
+                <DxDataGridColumn Field="@nameof(SupplierContactWithDetail.DeletedStatus)" Caption="Status"
+                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
+            </Columns>
+        </DxDataGrid>
+    </div>
+}
+else
+{
+    <div class="card py-2">
+        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+            <FluentValidationValidator/>
+            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                <DxFormLayoutItem Caption="Contact Type" ColSpanMd="6">
+                    <Template>
+                        <BlazoredTypeahead SearchMethod="SearchContactTypes"
+                                           @bind-Value="SelectedContactType"
+                                           Context="contactTypeContext"
+                                           EnableDropDown="true"
+                                           placeholder="Type to search...">
+                            <SelectedTemplate>
+                                @contactTypeContext.Name
+                            </SelectedTemplate>
+                            <ResultTemplate>
+                                @contactTypeContext.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => DataEditContext.ContactTypeId"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Contact Data" ColSpanMd="6">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.ContactData"/>
+                        <ValidationMessage For="() => DataEditContext.ContactData"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Remark" ColSpanMd="12">
+                    <Template>
+                        <DxTextBox @bind-Text="@DataEditContext.Remark"/>
+                        <ValidationMessage For="() => DataEditContext.Remark"/>
+                    </Template>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                    <Template>
+                        <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                             CancelUpdateClicked="@CancelUpdateClick"
+                                             @bind-SubmitClick="@SubmitClick"
+                                             @bind-SaveAndClose="@SaveAndClose"/>
+                    </Template>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+        </EditForm>
+    </div>
+}

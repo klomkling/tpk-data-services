@@ -1,0 +1,19 @@
+﻿@page "/"
+@attribute [Authorize]
+
+<h1>TPK Data Services</h1>
+
+<div class="mt-3">
+    <DxTabs CssClass="tg-tabs">
+        <DxTabPage Text="Transportation Requests">
+            <div class="mt-3">
+                <TransportationRequestScheduleComponent/>
+            </div>
+        </DxTabPage>
+        <DxTabPage Text="Production Orders">
+            <div class="mt-3">
+                <ProductionOrderScheduleComponent/>
+            </div>
+        </DxTabPage>
+    </DxTabs>
+</div>
