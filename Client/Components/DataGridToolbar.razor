@@ -1,7 +1,12 @@
 @inherits DataGridToolbarBase
 
 <DxToolbar ItemRenderStyleMode="ToolbarRenderStyleMode.Plain" ItemSizeMode="SizeMode.Small" CssClass="@CssClass">
-
+    <DxToolbarItem Text="Clear"
+                   BeginGroup="true"
+                   Click="@OnClearButtonClick"
+                   IconCssClass="mdi mdi-18px mdi-minus-box-outline"
+                   CssClass="font-bigger"
+                   Vislble="@ClearButtonVisible"/>
     <DxToolbarItem Text="New"
                    BeginGroup="true"
                    Click="@OnAddButtonClick"

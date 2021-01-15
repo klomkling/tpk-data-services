@@ -67,7 +67,7 @@ namespace Tpk.DataServices.Server.Controllers
                         ProductId = importInventoryLine.ProductId,
                         StockroomId = importInventoryLine.StockroomId,
                         StockLocationId = importInventoryLine.StockLocationId,
-                        PackageTypeId = importInventoryLine.PackageTypeId,
+                        PackageTypeId = importInventoryLine.PackageTypeId == 0 ? null : importInventoryLine.PackageTypeId,
                         LotNumber = importInventoryLine.LotNumber,
                         PackageNumber = importInventoryLine.PackageNumber,
                         PalletNo = importInventoryLine.PalletNo,

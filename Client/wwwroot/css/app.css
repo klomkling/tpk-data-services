@@ -238,3 +238,9 @@ app {
 .dxbs-sc-time-cell, .dxbs-sc-all-day-area {
     pointer-events: none;
 }
+
+.transportation-request-schedule .dxbs-sc-time-rulers-caption,
+.production-order-schedule .dxbs-sc-time-rulers-caption
+{
+    display: none;
+}

@@ -65,7 +65,7 @@ namespace Tpk.DataServices.Client.Pages.Inventories
             // Sort A_{column name} or D_{column name}
             var url = "api/inventory-requests/search?columns=i_requestType&searchStrings=b_p_n" +
                       "&columns=ni_status&searchStrings=c_x" +
-                      $"&columns=ge_requestNumber&searchStrings={searchText}&orderColumns=d_requestNumber";
+                      $"&columns=ge_requestNumber&searchStrings={searchText}&orderColumns=a_requestNumber";
             var result = await ApiService.GetAllAsync<InventoryRequest>(url);
             if (ApiService.IsSessionExpired) RedirectToLoginPage();
             if (ApiService.IsError) RedirectToErrorPage(ApiService.ErrorMessage);

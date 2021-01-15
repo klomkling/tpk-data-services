@@ -45,6 +45,7 @@ namespace Tpk.DataServices.Server.Controllers
 
             if (string.IsNullOrEmpty(customerOrderHelper.ErrorMessage) == false)
             {
+                _logger.LogError(customerOrderHelper.ErrorMessage);
                 return Ok(false);
             }
             

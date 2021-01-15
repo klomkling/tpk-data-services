@@ -133,9 +133,8 @@ namespace Tpk.DataServices.Client.Components.Transactions
         {
             Task.Run(async () =>
             {
-                SelectedInventoryRequestLine =
-                    await ApiService.GetAsync<InventoryRequestLine>(InventoryRequestLineId,
-                        "api/inventory-request-lines");
+                SelectedInventoryRequestLine = await ApiService
+                    .GetAsync<InventoryRequestLine>(InventoryRequestLineId, "api/inventory-request-lines");
                 if (ApiService.IsSessionExpired) RedirectToLoginPage();
                 if (ApiService.IsError) RedirectToErrorPage(ApiService.ErrorMessage);
             });
@@ -263,8 +262,8 @@ namespace Tpk.DataServices.Client.Components.Transactions
         {
             try
             {
-                var collection =
-                    DataEditContext.ImportDetails.Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
+                var collection = DataEditContext.ImportDetails
+                    .Split("\n", StringSplitOptions.RemoveEmptyEntries).ToList();
 
                 var idx = -1;
                 foreach (var source in collection)
@@ -276,7 +275,7 @@ namespace Tpk.DataServices.Client.Components.Transactions
                     // Check if duplicate line
                     if (idx++ == i)
                     {
-                        line = $"0;;0;;0;;;0;{source};Duplicated data";
+                        line = $"0;0;;0;;0;;;0;{source};Duplicated data";
 
                         model = line.ToModel<ImportInventoryLine>();
                         if (model != null)
@@ -298,7 +297,7 @@ namespace Tpk.DataServices.Client.Components.Transactions
                         false && SelectedProduct?.Code.Equals(detail[0], StringComparison.InvariantCultureIgnoreCase) ==
                         false)
                     {
-                        line = $"0;;0;;0;;;0;{source};Product code does not match current importing";
+                        line = $"0;0;;0;;0;;;0;{source};Product code does not match current importing";
 
                         model = line.ToModel<ImportInventoryLine>();
                         if (model != null)
@@ -333,15 +332,17 @@ namespace Tpk.DataServices.Client.Components.Transactions
 
                         await LoadStockroom(stockroomName);
                     }
-
+                    
                     if (SelectedStockroom == null) continue;
 
                     // Everything is ok
                     line = $"{InventoryRequestLineId};{SelectedStockroom.Id};{SelectedStockroom.Name};" +
                            $"{SelectedStockLocation.Id};{SelectedStockLocation.Location};" +
-                           $"{SelectedPackageType.Id};{SelectedPackageType.Code};{DataEditContext.PalletNo};" +
+                           $"{SelectedPackageType?.Id ?? 0};{SelectedPackageType?.Code};{DataEditContext.PalletNo};" +
                            $"{SelectedProduct?.Id ?? 0};{source};";
 
+                    Console.WriteLine(line);
+                    
                     model = line.ToModel<ImportInventoryLine>();
                     if (model == null) continue;
 

@@ -37,6 +37,8 @@ namespace Tpk.DataServices.Server.Controllers
         private readonly ITransportationRequestLineReferenceService _transportationRequestLineReferenceService;
         private readonly ICustomerService _customerService;
         private readonly ICustomerContactService _customerContactService;
+        private readonly ICustomerOrderService _customerOrderService;
+        private readonly ICustomerOrderReferenceService _customerOrderReferenceService;
 
         public InventoryRequestsController(IServiceProvider serviceProvider,
             IInventoryRequestService inventoryRequestService, IInventoryRequestLineService inventoryRequestLineService,
@@ -52,6 +54,7 @@ namespace Tpk.DataServices.Server.Controllers
             ITransportationRequestLineService transportationRequestLineService,
             ITransportationRequestLineReferenceService transportationRequestLineReferenceService,
             ICustomerService customerService, ICustomerContactService customerContactService,
+            ICustomerOrderService customerOrderService, ICustomerOrderReferenceService customerOrderReferenceService,
             ILogger<InventoryRequestsController> logger)
             : base(serviceProvider, inventoryRequestService, logger)
         {
@@ -72,6 +75,8 @@ namespace Tpk.DataServices.Server.Controllers
             _transportationRequestLineReferenceService = transportationRequestLineReferenceService;
             _customerService = customerService;
             _customerContactService = customerContactService;
+            _customerOrderService = customerOrderService;
+            _customerOrderReferenceService = customerOrderReferenceService;
         }
 
         [HttpGet("search")]
@@ -355,6 +360,41 @@ namespace Tpk.DataServices.Server.Controllers
                         inventoryRequest.RequestType != TgInventoryRequestTypes.ManualRequest.Value &&
                         inventoryRequest.RequestType != TgInventoryRequestTypes.ManualReturn.Value)
                     {
+                        // Update status transportation request
+                        condition1 = $"{nameof(TransportationRequestReference.InventoryRequestId)} = {model.Id}";
+                        var transportationRequestReference = await _transportationRequestReferenceService
+                            .GetFirstOrDefaultAsync<TransportationRequestReference>(IsAdmin == false, null, condition1);
+                        if (_transportationRequestReferenceService.IsError)
+                            return await ErrorResponse(_transportationRequestReferenceService.Exception.Message);
+
+                        var transportationRequest =
+                            await _transportationRequestService.GetAsync<TransportationRequest>(
+                                transportationRequestReference.TransportationRequestId, IsAdmin == false);
+                        if (_transportationRequestService.IsError)
+                            return await ErrorResponse(_transportationRequestService.Exception.Message);
+
+                        transportationRequest.Status = TgOrderStatuses.ReadyToPickup.Value;
+                        await _transportationRequestService.InsertUpdateAsync(transportationRequest);
+                        if (_transportationRequestService.IsError)
+                            return await ErrorResponse(_transportationRequestService.Exception.Message);
+
+                        // Update Order Status
+                        condition1 = $"{nameof(CustomerOrderReference.InventoryRequestId)} = {model.Id}";
+                        var customerOrderReference = await _customerOrderReferenceService
+                            .GetFirstOrDefaultAsync<CustomerOrderReference>(IsAdmin == false, null, condition1);
+                        if (_customerOrderReferenceService.IsError)
+                            return await ErrorResponse(_customerOrderReferenceService.Exception.Message);
+
+                        var customerOrder = await _customerOrderService
+                            .GetAsync<CustomerOrder>(customerOrderReference.CustomerOrderId);
+                        if (_customerOrderService.IsError)
+                            return await ErrorResponse(_customerOrderService.Exception.Message);
+
+                        customerOrder.Status = TgOrderStatuses.ReadyToPickup.Value;
+                        await _customerOrderService.InsertUpdateAsync(customerOrder);
+                        if (_customerOrderService.IsError)
+                            return await ErrorResponse(_customerOrderService.Exception.Message);
+
                         model.Status = TgOrderStatuses.OnDelivery.Value;
                         await _inventoryRequestService.InsertUpdateAsync(model);
                         if (_inventoryRequestService.IsError)
@@ -461,7 +501,7 @@ namespace Tpk.DataServices.Server.Controllers
                     await _inventoryRequestService.InsertUpdateAsync(model);
                     if (_inventoryRequestService.IsError)
                         return await ErrorResponse(_inventoryRequestService.Exception.Message);
-
+                    
                     confirmedCount++;
                 }
 

@@ -13,8 +13,8 @@
             PagerAllDataRowsItemVisible="true"
             PagerAllowedPageSizes="@AllowedPageSizes"
             @bind-MultipleSelectedDataRows="@SelectedCollection"
-            T="@StockWithDetail"
-            @ref="@Grid">
+            @ref="@Grid"
+            T="@StockWithDetail">
     <HeaderTemplate>
         <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
                          CssClass="@ToolbarCssClass"

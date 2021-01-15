@@ -12,8 +12,8 @@ using Tpk.DataServices.Shared.Data.Views;
 
 namespace Tpk.DataServices.Client.Components.Transactions
 {
-    public class ProductionRequestComponentBase : TgComponentBase<ProductionRequestWithDetail, ProductionRequest,
-        ProductionRequestEditContext>
+    public class ProductionRequestComponentBase 
+        : TgComponentBase<ProductionRequestWithDetail, ProductionRequest, ProductionRequestEditContext>
     {
         private Product _selectedProduct;
         private bool _isGeneratedClick;

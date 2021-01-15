@@ -16,6 +16,8 @@ namespace Tpk.DataServices.Shared.Data.EditContexts
             Quantity = DataItem.Quantity;
             NetWeight = DataItem.NetWeight;
             GrossWeight = DataItem.GrossWeight;
+            PackagePerLayerOnPallet = DataItem.PackagePerLayerOnPallet;
+            MaximumLayerOnPallet = DataItem.MaximumLayerOnPallet;
             Remark = DataItem.Remark;
         }
 
@@ -24,6 +26,8 @@ namespace Tpk.DataServices.Shared.Data.EditContexts
         public decimal Quantity { get; set; }
         public decimal NetWeight { get; set; }
         public decimal GrossWeight { get; set; }
+        public int PackagePerLayerOnPallet { get; set; }
+        public int MaximumLayerOnPallet { get; set; }
         public string Remark { get; set; }
     }
 }

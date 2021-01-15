@@ -23,9 +23,10 @@ namespace Tpk.DataServices.Shared.Data.EditContexts
             OrderNumber = DataItem.OrderNumber;
             OrderDate = DataItem.OrderDate;
             DueDate = DataItem.DueDate;
-            CompletedDate = DataItem.CompletedDate;
+            OurReference = DataItem.OurReference;
             Status = DataItem.Status;
             StatusDate = DataItem.StatusDate;
+            CompletedDate = DataItem.CompletedDate;
             Amount = DataItem.Amount;
             DiscountRate = DataItem.DiscountRate;
             DiscountAmount = DataItem.DiscountAmount;
@@ -40,9 +41,10 @@ namespace Tpk.DataServices.Shared.Data.EditContexts
         public int OrderNumber { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime DueDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
+        public string OurReference { get; set; }
         public string Status { get; set; }
         public DateTime StatusDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public decimal Amount { get; set; }
         public decimal DiscountRate { get; set; }
         public decimal DiscountAmount { get; set; }

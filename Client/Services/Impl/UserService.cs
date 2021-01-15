@@ -36,10 +36,10 @@ namespace Tpk.DataServices.Client.Services.Impl
                 Roles = Enumeration.GetAll<TgRoles>();
                 var content = await _sessionStorageService.GetItemAsync<string>("userState");
                 _userState = content.ToUserState();
-
+                
                 var roleId = _userState?.RoleId ?? 0;
                 Role = Roles.FirstOrDefault(r => r.Value.Equals(roleId)) ?? TgRoles.Anonymous;
-
+                
                 return _userState;
             }
             catch (Exception e)

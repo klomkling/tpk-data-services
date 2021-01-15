@@ -101,7 +101,7 @@ namespace Tpk.DataServices.Client.Pages.Inventories
             // Sort A_{column name} or D_{column name}
             var url = "api/inventory-requests/search?columns=i_requestType&searchStrings=o_r_m" +
                       "&columns=ni_status&searchStrings=d_c_x&" +
-                      $"&columns=ge_requestNumber&searchStrings={searchText}&orderColumns=d_requestNumber";
+                      $"&columns=ge_requestNumber&searchStrings={searchText}&orderColumns=a_requestNumber";
             var result = await ApiService.GetAllAsync<InventoryRequest>(url);
             if (ApiService.IsSessionExpired) RedirectToLoginPage();
             if (ApiService.IsError) RedirectToErrorPage(ApiService.ErrorMessage);
@@ -175,10 +175,6 @@ namespace Tpk.DataServices.Client.Pages.Inventories
             if (_confirmClick) return;
             _confirmClick = true;
 
-            // Check if inventory request type is manual request 
-            // var url = IsCustomerOrder
-            //     ? "api/inventory-requests/generate-transportation-request"
-            //     : "api/inventory-requests/confirm-delivery";
             var done = await ApiService.PostAsync("api/inventory-requests/confirm-delivery",
                 new List<int> {SelectedInventoryRequest.Id});
             if (ApiService.IsSessionExpired) RedirectToLoginPage();

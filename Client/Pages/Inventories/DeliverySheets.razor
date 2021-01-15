@@ -106,7 +106,7 @@ else
                                         IsStockSelectionMode="true"
                                         InventoryRequestType="@SelectedInventoryRequest.RequestType"
                                         AfterBookingStock="@DoneSelectionProcess"
-                                        @bind-FirstRender="@IsStockFirstRender"/>
+                                        FirstRender="true"/>
                     }
                     else
                     {
@@ -122,4 +122,4 @@ else
     }
 }
 
-<div class="pt-lg-5"></div>
+<div class="pt-5"></div>

@@ -70,7 +70,7 @@ namespace Tpk.DataServices.Server.Services.Impl
 
         public UserPermission GetByRestrictObjectId(int id, bool isActive = true)
         {
-            var sql = SelectQueryBuilder(TableName, null, isActive, $"RestrictObjectId = {id}");
+            var sql = SelectQueryBuilder(TableName, null, isActive, $"{nameof(UserPermission.ClaimTypeId)} = {id}");
 
             var result = QueryFirstOrDefault<UserPermission>(sql);
 
@@ -181,7 +181,7 @@ namespace Tpk.DataServices.Server.Services.Impl
 
         public async Task<UserPermission> GetByRestrictObjectIdAsync(int id, bool isActive = true)
         {
-            var sql = SelectQueryBuilder(TableName, null, isActive, $"RestrictObjectId = {id}");
+            var sql = SelectQueryBuilder(TableName, null, isActive, $"{nameof(UserPermission.ClaimTypeId)} = {id}");
 
             var result = await QueryFirstOrDefaultAsync<UserPermission>(sql);
 

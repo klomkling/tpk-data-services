@@ -33,7 +33,6 @@ namespace Tpk.DataServices.Client.Services.Impl
         {
             try
             {
-                // var jsonModel = JsonSerializer.Serialize(model);
                 var jsonModel = JsonConvert.SerializeObject(model);
                 var response = await _httpClient.PostAsync($"{_apiUrl}api/token/login",
                     new StringContent(jsonModel, Encoding.UTF8, "application/json"));
@@ -112,5 +111,6 @@ namespace Tpk.DataServices.Client.Services.Impl
                 throw;
             }
         }
+
     }
 }

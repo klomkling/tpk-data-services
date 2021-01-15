@@ -90,9 +90,14 @@ namespace Tpk.DataServices.Server.Controllers
             var condition1 = $"{nameof(StockWithDetail.ProductId)} = {id}";
             var condition2 =
                 $"{nameof(StockWithDetail.AvailableQuantity)} - {nameof(StockWithDetail.BookedQuantity)} > 0";
-            var orderClause = $"{nameof(StockWithDetail.ProductCode)}, {nameof(StockWithDetail.StockroomName)}, " +
-                              $"{nameof(StockWithDetail.StockLocation)}, {nameof(StockWithDetail.PackageCode)}, " +
-                              $"{nameof(StockWithDetail.ReceivedDate)}";
+            // var orderClause = $"{nameof(StockWithDetail.ProductCode)}, {nameof(StockWithDetail.StockroomName)}, " +
+            //                   $"{nameof(StockWithDetail.StockLocation)}, {nameof(StockWithDetail.PackageCode)}, " +
+            //                   $"{nameof(StockWithDetail.ReceivedDate)}";
+            var orderClause =
+                $"CAST ({nameof(StockWithDetail.ReceivedDate)} AS DATE), {nameof(StockWithDetail.PackageCode)}, " +
+                $"{nameof(StockWithDetail.PalletNo)}, {nameof(StockWithDetail.PackageNumber)}, " +
+                $"{nameof(StockWithDetail.StockroomName)}, {nameof(StockWithDetail.StockLocation)}";
+            
             var collection =
                 await _stockService.GetAllAsync<StockWithDetail>(IsAdmin == false, orderClause,
                     condition1, condition2);

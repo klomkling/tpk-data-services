@@ -25,13 +25,20 @@ namespace Tpk.DataServices.Client.Validators
                 .GreaterThanOrEqualTo(o => o.OrderDate)
                 .When(o => Equals(o.CompletedDate, null) == false);
 
+            RuleFor(o => o.OurReference)
+                .Cascade(CascadeMode.Stop)
+                .MaximumLength(50);
+            
             RuleFor(o => o.VatRate)
+                .Cascade(CascadeMode.Stop)
                 .InclusiveBetween(0m, 100m);
 
             RuleFor(o => o.DiscountRate)
+                .Cascade(CascadeMode.Stop)
                 .InclusiveBetween(0m, 100m);
 
             RuleFor(o => o.DiscountAmount)
+                .Cascade(CascadeMode.Stop)
                 .GreaterThanOrEqualTo(0m)
                 .LessThanOrEqualTo(o => o.Amount);
 

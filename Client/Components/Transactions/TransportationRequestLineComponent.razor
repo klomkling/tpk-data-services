@@ -2,124 +2,131 @@
 
 <ProcessingSpiner Visible="@IsComponentBusy"/>
 
-@if (ComponentMode == ComponentMode.List)
+@if (IsValidating)
 {
-    <div class="position-relative">
-        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
-
-        <WarningModal WarningMessage="@WarningMessage"
-                      WarningResponse="@HandleWarningResponse"
-                      @bind-IsShowWarning="@IsShowWarning"/>
-
-        <DxDataGrid  CustomData="@LoadTransportationRequestLines"
-                     KeyFieldName="@KeyFieldName"
-                     CssClass="@CssClass"
-                     PageSize="@PageSize"
-                     PageIndex="@PageIndex"
-                     SelectionMode="@SelectionMode"
-                     SelectAllMode="@SelectAllMode"
-                     ShowFilterRow="IsShowFilterRow"
-                     RowClick="@OnRowClick"
-                     LayoutRestoring="@OnLayoutRestoring"
-                     PagerPageSizeSelectorVisible="true"
-                     PagerAllDataRowsItemVisible="true"
-                     PagerAllowedPageSizes="@AllowedPageSizes"
-                     T="@TransportationRequestLineWithDetail"
-                     @ref="@Grid"
-                     @bind-MultipleSelectedDataRows="@SelectedCollection">
-
-            <HeaderTemplate>
-                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
-                                 CssClass="@ToolbarCssClass"
-                                 SelectedCount="@SelectedCount"
-                                 RequiredClaimType="@RequiredClaimType"
-                                 OnToolbarClick="@HandleToolbarResponse"/>
-            </HeaderTemplate>
-
-            <Columns>
-                @* <DxDataGridSelectionColumn Width="60px"/> *@
-                <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.ProductCode)"
-                                  Caption="Code"/>
-                <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.ProductName)"
-                                  Caption="Name"/>
-                <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.UnitName)"
-                                  Caption="Unit"
-                                  Width="100px"/>
-                <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.Quantity)"
-                                          Caption="Quantity" 
-                                          Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.ReadyQuantity)"
-                                          Caption="Ready Qty." 
-                                          Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.RemainQuantity)"
-                                          Caption="Remain Qty." 
-                                          Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.DeletedStatus)" Caption="Status"
-                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
-                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
-            </Columns>
-        </DxDataGrid>
-    </div>
+    <LoadingProcess />
 }
 else
 {
-    <div class="card py-2">
-        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-            <FluentValidationValidator/>
-            <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
-                <DxFormLayoutItem Caption="Product" ColSpanMd="4">
-                    <Template>
-                        @if (SelectedItem.IsFromInventoryRequestLine)
-                        {
-                            <DxTextBox ReadOnly="true" @bind-Text="@DataEditContext.ProductCode"/>
-                        }
-                        else
-                        {
-                            <BlazoredTypeahead SearchMethod="SearchProducts"
-                                               EnableDropDown="true"
-                                               Context="productContext"
-                                               placeholder="Type to search..."
-                                               @bind-Value="SelectedProduct">
-                                <SelectedTemplate>
-                                    @productContext.Code
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @productContext.Code
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        }
-                        <ValidationMessage For="() => DataEditContext.ProductId"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Name" ColSpanMd="4">
-                    <Template>
-                        <DxTextBox ReadOnly="true" @bind-Text="@DataEditContext.ProductName"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="@($"Quantity{DataEditContext.UnitName}")" ColSpanMd="4">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="999999.9999m"
-                                    MinValue="0m"
-                                    Increment="0.0001m"
-                                    DisplayFormat="N"
-                                    ReadOnly="@(SelectedItem.IsFromInventoryRequestLine)"
-                                    @bind-Value="@DataEditContext.Quantity"/>
-                        <ValidationMessage For="() => DataEditContext.Quantity"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem ColSpanMd="12">
-                    <Template>
-                        <EditFormButtonGroup ComponentMode="@ComponentMode"
-                                             CancelUpdateClicked="@CancelUpdateClick"
-                                             @bind-SubmitClick="@SubmitClick"
-                                             @bind-SaveAndClose="@SaveAndClose"/>
-                    </Template>
-                </DxFormLayoutItem>
-            </DxFormLayout>
-        </EditForm>
-    </div>
+    if (ComponentMode == ComponentMode.List)
+    {
+        <div class="position-relative">
+            <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+            <WarningModal WarningMessage="@WarningMessage"
+                          WarningResponse="@HandleWarningResponse"
+                          @bind-IsShowWarning="@IsShowWarning"/>
+
+            <DxDataGrid CustomData="@LoadTransportationRequestLines"
+                        KeyFieldName="@KeyFieldName"
+                        CssClass="@CssClass"
+                        PageSize="@PageSize"
+                        PageIndex="@PageIndex"
+                        SelectionMode="@SelectionMode"
+                        SelectAllMode="@SelectAllMode"
+                        ShowFilterRow="IsShowFilterRow"
+                        RowClick="@OnRowClick"
+                        LayoutRestoring="@OnLayoutRestoring"
+                        PagerPageSizeSelectorVisible="true"
+                        PagerAllDataRowsItemVisible="true"
+                        PagerAllowedPageSizes="@AllowedPageSizes"
+                        @bind-MultipleSelectedDataRows="@SelectedCollection"
+                        @ref="@Grid"
+                        T="@TransportationRequestLineWithDetail">
+
+                <HeaderTemplate>
+                    <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                     CssClass="@ToolbarCssClass"
+                                     SelectedCount="@SelectedCount"
+                                     RequiredClaimType="@RequiredClaimType"
+                                     OnToolbarClick="@HandleToolbarResponse"/>
+                </HeaderTemplate>
+
+                <Columns>
+                    @* <DxDataGridSelectionColumn Width="60px"/> *@
+                    <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.ProductCode)"
+                                      Caption="Code"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.ProductName)"
+                                      Caption="Name"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.UnitName)"
+                                      Caption="Unit"
+                                      Width="100px"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.Quantity)"
+                                              Caption="Quantity"
+                                              Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.ReadyQuantity)"
+                                              Caption="Ready Qty."
+                                              Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(TransportationRequestLineWithDetail.RemainQuantity)"
+                                              Caption="Remain Qty."
+                                              Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestLineWithDetail.DeletedStatus)" Caption="Status"
+                                      Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                      Visible="@IsAdmin" ShowInColumnChooser="false"/>
+                </Columns>
+            </DxDataGrid>
+        </div>
+    }
+    else
+    {
+        <div class="card py-2">
+            <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+                <FluentValidationValidator/>
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Product" ColSpanMd="4">
+                        <Template>
+                            @if (SelectedItem.IsFromInventoryRequestLine)
+                            {
+                                <DxTextBox ReadOnly="true" @bind-Text="@DataEditContext.ProductCode"/>
+                            }
+                            else
+                            {
+                                <BlazoredTypeahead SearchMethod="SearchProducts"
+                                                   EnableDropDown="true"
+                                                   Context="productContext"
+                                                   placeholder="Type to search..."
+                                                   @bind-Value="SelectedProduct">
+                                    <SelectedTemplate>
+                                        @productContext.Code
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @productContext.Code
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            }
+                            <ValidationMessage For="() => DataEditContext.ProductId"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Name" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox ReadOnly="true" @bind-Text="@DataEditContext.ProductName"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="@($"Quantity{DataEditContext.UnitName}")" ColSpanMd="4">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="999999.9999m"
+                                        MinValue="0m"
+                                        Increment="0.0001m"
+                                        DisplayFormat="N"
+                                        ReadOnly="@(SelectedItem.IsFromInventoryRequestLine)"
+                                        @bind-Value="@DataEditContext.Quantity"/>
+                            <ValidationMessage For="() => DataEditContext.Quantity"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="12">
+                        <Template>
+                            <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                                 CancelUpdateClicked="@CancelUpdateClick"
+                                                 @bind-SubmitClick="@SubmitClick"
+                                                 @bind-SaveAndClose="@SaveAndClose"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditForm>
+        </div>
+    }
 }

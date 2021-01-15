@@ -33,6 +33,8 @@
 
   <ItemGroup>
     <Folder Include="Components" />
+    <Folder Include="wwwroot\reports" />
+    <Folder Include="wwwroot\reports\" />
   </ItemGroup>
 
   <ItemGroup>

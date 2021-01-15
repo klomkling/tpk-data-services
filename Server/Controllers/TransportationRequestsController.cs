@@ -17,8 +17,8 @@ namespace Tpk.DataServices.Server.Controllers
     [AuthorizeRequired]
     [ApiController]
     [Route("api/transportation-requests")]
-    public class
-        TransportationRequestsController : TgControllerBase<TransportationRequestWithDetail, TransportationRequest>
+    public class TransportationRequestsController 
+        : TgControllerBase<TransportationRequestWithDetail, TransportationRequest>
     {
         private readonly ITransportationRequestService _transportationRequestService;
         private readonly ITransportationRequestScheduleService _transportationRequestScheduleService;

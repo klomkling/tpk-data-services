@@ -9,9 +9,10 @@ namespace Tpk.DataServices.Shared.Data.Models
         public int OrderNumber { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime DueDate { get; set; }
-        public DateTime? CompletedDate { get; set; }
+        public string OurReference { get; set; }
         public string Status { get; set; }
         public DateTime StatusDate { get; set; }
+        public DateTime? CompletedDate { get; set; }
         public decimal Amount { get; set; }
         public decimal DiscountRate { get; set; }
         public decimal DiscountAmount { get; set; }

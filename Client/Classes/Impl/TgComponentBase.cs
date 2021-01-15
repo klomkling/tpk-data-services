@@ -46,6 +46,7 @@ namespace Tpk.DataServices.Client.Classes.Impl
         private IEnumerable<TView> _selectedCollection;
         private int _selectedCount;
         private bool _refreshDataGrid;
+        private TView _selectedItem;
 
         #endregion
 
@@ -70,7 +71,6 @@ namespace Tpk.DataServices.Client.Classes.Impl
         protected int NewInsertedOrderId;
         protected readonly List<int> AllowedPageSizes = new List<int> {5, 10, 20, 50};
         protected ComponentMode ComponentMode = ComponentMode.List;
-        private TView _selectedItem;
 
         #endregion
 
@@ -327,6 +327,8 @@ namespace Tpk.DataServices.Client.Classes.Impl
         {
             await base.InitComponent(requireClaimType, apiUrl);
 
+            if (Grid == null) return;
+
             await CancelUpdateClick();
         }
 
@@ -356,7 +358,12 @@ namespace Tpk.DataServices.Client.Classes.Impl
             Task.Run(async () =>
             {
                 var collection = await LocalStorageService.GetItemAsync<IEnumerable<TView>>(name);
-                SelectedCollection = collection.AsEnumerable();
+                if (collection == null) return;
+                
+                var result = collection.ToList();
+                if (result.Count == 0) return;
+                
+                SelectedCollection = result.AsEnumerable();
                 await LocalStorageService.RemoveItemAsync(name);
 
                 await Grid.Refresh();
@@ -367,6 +374,13 @@ namespace Tpk.DataServices.Client.Classes.Impl
         {
             switch (args.Name.ToLower())
             {
+                case "clear":
+                    ToggleProcessSpinner(true);
+                    Grid.ClearSelection();
+                    SavedLayout = Grid.SaveLayout();
+                    ToggleProcessSpinner(false);
+                    break;
+                
                 case "add":
                     ToggleProcessSpinner(true);
                     Grid.ClearSelection();

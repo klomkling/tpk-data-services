@@ -36,6 +36,14 @@ namespace Tpk.DataServices.Client.Validators
                 .Cascade(CascadeMode.Stop)
                 .InclusiveBetween(0m, 9999.9999m);
 
+            RuleFor(s => s.PackagePerLayerOnPallet)
+                .Cascade(CascadeMode.Stop)
+                .InclusiveBetween(0, 999);
+
+            RuleFor(s => s.MaximumLayerOnPallet)
+                .Cascade(CascadeMode.Stop)
+                .InclusiveBetween(0, 999);
+
             RuleFor(s => s.Remark)
                 .Cascade(CascadeMode.Stop)
                 .MaximumLength(100);

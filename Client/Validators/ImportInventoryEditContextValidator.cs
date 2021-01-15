@@ -14,10 +14,10 @@ namespace Tpk.DataServices.Client.Validators
                 .NotEmpty().WithName("Stock Location")
                 .GreaterThan(0).WithMessage("Stock Location is required");
 
-            RuleFor(i => i.PackageTypeId)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithName("Package Type")
-                .GreaterThan(0).WithMessage("Package Type is required");
+            // RuleFor(i => i.PackageTypeId)
+            //     .Cascade(CascadeMode.Stop)
+            //     .NotEmpty().WithName("Package Type")
+            //     .GreaterThan(0).WithMessage("Package Type is required");
 
             RuleFor(i => i.PalletNo)
                 .Cascade(CascadeMode.Stop)

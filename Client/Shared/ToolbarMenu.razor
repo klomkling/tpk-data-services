@@ -37,7 +37,7 @@
         <DxToolbarItem Text="References">
             <Items>
                 <DxToolbarItem Text="Products" NavigateUrl="/references/products"/>
-                <DxToolbarItem Text="Product Groups" NavigateUrl="/references/product-categories" BeginGroup="true"/>
+                <DxToolbarItem Text="Product Categories" NavigateUrl="/references/product-categories" BeginGroup="true"/>
                 <DxToolbarItem Text="Product Lines" NavigateUrl="/references/product-lines"/>
                 <DxToolbarItem Text="Product Units" NavigateUrl="/references/product-units"/>
                 <DxToolbarItem Text="Product Colors" NavigateUrl="/references/product-colors"/>
@@ -59,7 +59,8 @@
         </DxToolbarItem>
         <DxToolbarItem Text="@_username" BeginGroup="true" Alignment="ToolbarItemAlignment.Right">
             <Items>
-                <DxToolbarItem Text="Log out" NavigateUrl="/logout"/>
+                <DxToolbarItem Text="Update password" NavigateUrl="/users/update-password"/>
+                <DxToolbarItem Text="Log out" NavigateUrl="/logout" BeginGroup="true"/>
             </Items>
         </DxToolbarItem>
     </Items>

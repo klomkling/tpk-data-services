@@ -2,73 +2,80 @@
 
 <ProcessingSpiner Visible="@IsComponentBusy"/>
 
-@if (ComponentMode == ComponentMode.List)
+@if (IsValidating)
 {
-    <div class="position-relative">
-        <div class="@(IsDetailBusy ? "component-backdrop" : null)">
-        </div>
-
-        <WarningModal WarningMessage="@WarningMessage"
-                      WarningResponse="@HandleWarningResponse"
-                      @bind-IsShowWarning="@IsShowWarning"/>
-
-        <DxDataGrid  CustomData="@LoadProductCategories"
-                     KeyFieldName="@KeyFieldName"
-                     CssClass="@CssClass"
-                     PageSize="@PageSize"
-                     PageIndex="@PageIndex"
-                     SelectionMode="@SelectionMode"
-                     SelectAllMode="@SelectAllMode"
-                     ShowFilterRow="IsShowFilterRow"
-                     RowClick="@OnRowClick"
-                     LayoutRestoring="@OnLayoutRestoring"
-                     PagerPageSizeSelectorVisible="true"
-                     PagerAllDataRowsItemVisible="true"
-                     PagerAllowedPageSizes="@AllowedPageSizes"
-                     @bind-MultipleSelectedDataRows="@SelectedCollection"
-                     @ref="@Grid"
-                     T="@ProductCategory">
-
-            <HeaderTemplate>
-                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
-                                 CssClass="@ToolbarCssClass"
-                                 SelectedCount="@SelectedCount"
-                                 RequiredClaimType="@RequiredClaimType"
-                                 OnToolbarClick="@HandleToolbarResponse"
-                                 CanRestore="@CanRestore"/>
-            </HeaderTemplate>
-
-            <Columns>
-                @* <DxDataGridSelectionColumn Width="60px"/> *@
-                <DxDataGridColumn Field="@nameof(ProductCategory.Name)" Caption="Name"/>
-                <DxDataGridColumn Field="@nameof(ProductCategory.DeletedStatus)" Caption="Status"
-                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
-                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
-            </Columns>
-        </DxDataGrid>
-    </div>
+    <LoadingProcess />
 }
 else
 {
-    <div class="card py-2">
-        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-            <FluentValidationValidator/>
-            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
-                <DxFormLayoutItem Caption="Name" ColSpanMd="6">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Name"/>
-                        <ValidationMessage For="() => DataEditContext.Name"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
-                    <Template>
-                        <EditFormButtonGroup ComponentMode="@ComponentMode"
-                                             CancelUpdateClicked="@CancelUpdateClick"
-                                             @bind-SubmitClick="@SubmitClick"
-                                             @bind-SaveAndClose="@SaveAndClose"/>
-                    </Template>
-                </DxFormLayoutItem>
-            </DxFormLayout>
-        </EditForm>
-    </div>
+    if (ComponentMode == ComponentMode.List)
+    {
+        <div class="position-relative">
+            <div class="@(IsDetailBusy ? "component-backdrop" : null)">
+            </div>
+
+            <WarningModal WarningMessage="@WarningMessage"
+                          WarningResponse="@HandleWarningResponse"
+                          @bind-IsShowWarning="@IsShowWarning"/>
+
+            <DxDataGrid CustomData="@LoadProductCategories"
+                        KeyFieldName="@KeyFieldName"
+                        CssClass="@CssClass"
+                        PageSize="@PageSize"
+                        PageIndex="@PageIndex"
+                        SelectionMode="@SelectionMode"
+                        SelectAllMode="@SelectAllMode"
+                        ShowFilterRow="IsShowFilterRow"
+                        RowClick="@OnRowClick"
+                        LayoutRestoring="@OnLayoutRestoring"
+                        PagerPageSizeSelectorVisible="true"
+                        PagerAllDataRowsItemVisible="true"
+                        PagerAllowedPageSizes="@AllowedPageSizes"
+                        @bind-MultipleSelectedDataRows="@SelectedCollection"
+                        @ref="@Grid"
+                        T="@ProductCategory">
+
+                <HeaderTemplate>
+                    <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                     CssClass="@ToolbarCssClass"
+                                     SelectedCount="@SelectedCount"
+                                     RequiredClaimType="@RequiredClaimType"
+                                     OnToolbarClick="@HandleToolbarResponse"
+                                     CanRestore="@CanRestore"/>
+                </HeaderTemplate>
+
+                <Columns>
+                    @* <DxDataGridSelectionColumn Width="60px"/> *@
+                    <DxDataGridColumn Field="@nameof(ProductCategory.Name)" Caption="Name"/>
+                    <DxDataGridColumn Field="@nameof(ProductCategory.DeletedStatus)" Caption="Status"
+                                      Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                      Visible="@IsAdmin" ShowInColumnChooser="false"/>
+                </Columns>
+            </DxDataGrid>
+        </div>
+    }
+    else
+    {
+        <div class="card py-2">
+            <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+                <FluentValidationValidator/>
+                <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Name"/>
+                            <ValidationMessage For="() => DataEditContext.Name"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem BeginRow="true" ColSpanMd="12">
+                        <Template>
+                            <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                                 CancelUpdateClicked="@CancelUpdateClick"
+                                                 @bind-SubmitClick="@SubmitClick"
+                                                 @bind-SaveAndClose="@SaveAndClose"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditForm>
+        </div>
+    }
 }

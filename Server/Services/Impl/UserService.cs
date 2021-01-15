@@ -32,6 +32,32 @@ namespace Tpk.DataServices.Server.Services.Impl
             ExceptColumns = new List<string> {"PasswordHash", "LastVisited"};
         }
 
+        public User GetByIdPassword(int id, string password)
+        {
+            // get user
+            var sql = ProcedureName("VerifyUser");
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+            parameters.Add("Password", password, DbType.String);
+            parameters.Add("Salt", _appSettings.Salt, DbType.String);
+
+            var user = QueryFirstOrDefault<User>(sql, parameters, CommandType.StoredProcedure);
+            return IsError ? default : user;
+        }
+
+        public async Task<User> GetByIdPasswordAsync(int id, string password)
+        {
+            // get user
+            var sql = ProcedureName("Verify");
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+            parameters.Add("Password", password, DbType.String);
+            parameters.Add("Salt", _appSettings.Salt, DbType.String);
+
+            var user = await QueryFirstOrDefaultAsync<User>(sql, parameters, CommandType.StoredProcedure);
+            return IsError ? default : user;
+        }
+
         public User GetByUsername(string username, bool isActive = true)
         {
             var sql = SelectQueryBuilder(TableName, null, isActive, "Username = @Username");

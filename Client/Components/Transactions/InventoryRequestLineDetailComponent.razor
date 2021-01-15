@@ -2,218 +2,225 @@
 
 <ProcessingSpiner Visible="@IsComponentBusy"/>
 
-@if (ComponentMode == ComponentMode.List)
+@if (IsValidating)
 {
-    <div class="position-relative">
-        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
-
-        <WarningModal @bind-IsShowWarning="@IsShowWarning"
-                       WarningMessage="@WarningMessage"
-                       WarningResponse="@HandleWarningResponse"/>
-
-        <DxDataGrid @ref="@Grid"
-                     T="@InventoryRequestLineDetailWithDetail"
-                     CustomData="@LoadInventoryRequestLineDetails"
-                     KeyFieldName="@KeyFieldName"
-                     CssClass="@CssClass"
-                     PageSize="@PageSize"
-                     PageIndex="@PageIndex"
-                     SelectionMode="@SelectionMode"
-                     SelectAllMode="@SelectAllMode"
-                     @bind-MultipleSelectedDataRows="@SelectedCollection"
-                     ShowFilterRow="IsShowFilterRow"
-                     RowClick="@OnRowClick"
-                     LayoutRestoring="@OnLayoutRestoring"
-                     PagerPageSizeSelectorVisible="true"
-                     PagerAllDataRowsItemVisible="true"
-                     PagerAllowedPageSizes="@AllowedPageSizes">
-
-            <HeaderTemplate>
-                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
-                                 CssClass="@ToolbarCssClass"
-                                 SelectedCount="@SelectedCount"
-                                 RequiredClaimType="@RequiredClaimType"
-                                 OnToolbarClick="@HandleToolbarResponse"
-                                 EditButtonVisible="false"
-                                 RestoreButtonVisible="false"
-                                 AddButtonVisible="@IsBookingMode"
-                                 CanEdit="false"/>
-            </HeaderTemplate>
-
-            <Columns>
-                @* <DxDataGridSelectionColumn Width="60px"/> *@
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ProductCode)"
-                                  Caption="Product Code"
-                                  Visible="false"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ProductName)"
-                                  Caption="Product Name"
-                                  Visible="false"/>
-                <DxDataGridDateEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ReceivedDate)"
-                                          Caption="Received Date"
-                                          DisplayFormat="dd/MM/yyyy"
-                                          Width="100px"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.LotNumber)"
-                                  Caption="LotNumber" 
-                                  Width="100px"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PalletNo)"
-                                  Caption="Pallet No."
-                                  Width="100px"/>
-                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PackageNumber)"
-                                          Caption="Package No."
-                                          DisplayFormat="N0"
-                                          Width="100px"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PackageTypeCode)"
-                                  Caption="Package"
-                                  Width="100px"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.StockLocationName)"
-                                  Caption="Location"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.StockroomName)"
-                                  Caption="Stockroom"
-                                  Visible="false"/>
-                <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.Quantity)"
-                                          Caption="Quantity" Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.DeletedStatus)" Caption="Status"
-                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
-                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
-            </Columns>
-        </DxDataGrid>
-    </div>
+    <LoadingProcess />
 }
 else
 {
-    <div class="card py-2">
-        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-            <FluentValidationValidator/>
-            <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
-                <DxFormLayoutItem Caption="Product" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox ReadOnly="true"
-                                   @bind-Text="@DataEditContext.ProductCode"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Stockroom" ColSpanMd="3">
-                    <Template>
-                        @if (IsManual)
-                        {
-                            <BlazoredTypeahead SearchMethod="SearchStockrooms"
-                                               EnableDropDown="true"
-                                               Context="stockroomContext"
-                                               placeholder="Type to search..."
-                                               @bind-Value="SelectedStockroom">
-                                <SelectedTemplate>
-                                    @stockroomContext.Name
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @stockroomContext.Name
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                            <ValidationMessage For="() => DataEditContext.StockroomId"/>
-                        }
-                        else
-                        {
+    if (ComponentMode == ComponentMode.List)
+    {
+        <div class="position-relative">
+            <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+            <WarningModal WarningMessage="@WarningMessage"
+                          WarningResponse="@HandleWarningResponse"
+                          @bind-IsShowWarning="@IsShowWarning"/>
+
+            <DxDataGrid CustomData="@LoadInventoryRequestLineDetails"
+                        KeyFieldName="@KeyFieldName"
+                        CssClass="@CssClass"
+                        PageSize="@PageSize"
+                        PageIndex="@PageIndex"
+                        SelectionMode="@SelectionMode"
+                        SelectAllMode="@SelectAllMode"
+                        ShowFilterRow="IsShowFilterRow"
+                        RowClick="@OnRowClick"
+                        LayoutRestoring="@OnLayoutRestoring"
+                        PagerPageSizeSelectorVisible="true"
+                        PagerAllDataRowsItemVisible="true"
+                        PagerAllowedPageSizes="@AllowedPageSizes"
+                        @bind-MultipleSelectedDataRows="@SelectedCollection"
+                        @ref="@Grid"
+                        T="@InventoryRequestLineDetailWithDetail">
+
+                <HeaderTemplate>
+                    <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                     CssClass="@ToolbarCssClass"
+                                     SelectedCount="@SelectedCount"
+                                     RequiredClaimType="@RequiredClaimType"
+                                     OnToolbarClick="@HandleToolbarResponse"
+                                     EditButtonVisible="false"
+                                     RestoreButtonVisible="false"
+                                     AddButtonVisible="@IsBookingMode"
+                                     CanEdit="false"/>
+                </HeaderTemplate>
+
+                <Columns>
+                    @* <DxDataGridSelectionColumn Width="60px"/> *@
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ProductCode)"
+                                      Caption="Product Code"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ProductName)"
+                                      Caption="Product Name"
+                                      Visible="false"/>
+                    <DxDataGridDateEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.ReceivedDate)"
+                                              Caption="Received Date"
+                                              DisplayFormat="dd/MM/yyyy"
+                                              Width="100px"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.LotNumber)"
+                                      Caption="LotNumber"
+                                      Width="100px"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PalletNo)"
+                                      Caption="Pallet No."
+                                      Width="100px"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PackageNumber)"
+                                              Caption="Package No."
+                                              DisplayFormat="N0"
+                                              Width="100px"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.PackageTypeCode)"
+                                      Caption="Package"
+                                      Width="100px"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.StockLocationName)"
+                                      Caption="Location"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.StockroomName)"
+                                      Caption="Stockroom"
+                                      Visible="false"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(InventoryRequestLineDetailWithDetail.Quantity)"
+                                              Caption="Quantity" Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridColumn Field="@nameof(InventoryRequestLineDetailWithDetail.DeletedStatus)" Caption="Status"
+                                      Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                      Visible="@IsAdmin" ShowInColumnChooser="false"/>
+                </Columns>
+            </DxDataGrid>
+        </div>
+    }
+    else
+    {
+        <div class="card py-2">
+            <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+                <FluentValidationValidator/>
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Product" ColSpanMd="3">
+                        <Template>
                             <DxTextBox ReadOnly="true"
-                                       @bind-Text="@DataEditContext.StockroomName"/>
-                        }
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Location" ColSpanMd="3">
-                    <Template>
-                        @if (DataEditContext.IsImported)
-                        {
-                            <DxTextBox ReadOnly="true" 
-                                       @bind-Text="@DataEditContext.StockLocationName"/>
-                        }
-                        else
-                        {
-                            <BlazoredTypeahead SearchMethod="SearchStockLocations"
-                                               EnableDropDown="true"
-                                               Context="locationContext"
-                                               placeholder="Type to search..."
-                                               @bind-Value="SelectedStockLocation">
-                                <SelectedTemplate>
-                                    @locationContext.Location
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @locationContext.Location
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        }
-                        <ValidationMessage For="() => DataEditContext.StockLocationId"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Package" ColSpanMd="3">
-                    <Template>
-                        @if (DataEditContext.IsImported)
-                        {
-                            <DxTextBox ReadOnly="true"
-                                       @bind-Text="@DataEditContext.PackageTypeCode"/>
-                        }
-                        else
-                        {
-                            <BlazoredTypeahead SearchMethod="SearchPackageTypes"
-                                               EnableDropDown="true"
-                                               Context="packageContext"
-                                               placeholder="Type to search..."
-                                               @bind-Value="SelectedPackageType">
-                                <SelectedTemplate>
-                                    @packageContext.Code
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @packageContext.Code
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        }
-                        <ValidationMessage For="() => DataEditContext.PackageTypeId"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Lot Number" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox ReadOnly="@DataEditContext.IsImported" 
-                                   @bind-Text="@DataEditContext.LotNumber"/>
-                        <ValidationMessage For="() => DataEditContext.LotNumber"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Package Number" ColSpanMd="3">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="999999"
-                                    MinValue="1"
-                                    Increment="1"
-                                    DisplayFormat="N0"
-                                    ReadOnly="@DataEditContext.IsImported"
-                                    @bind-Value="@DataEditContext.PackageNumber"/>
-                        <ValidationMessage For="() => DataEditContext.PackageNumber"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Pallet No." ColSpanMd="3">
-                    <Template>
-                        <DxTextBox ReadOnly="@DataEditContext.IsImported" 
-                                   @bind-Text="@DataEditContext.PalletNo"/>
-                        <ValidationMessage For="() => DataEditContext.PalletNo"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Quantity" ColSpanMd="3">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="999999.9999m"
-                                    MinValue="0m"
-                                    Increment="0.0001m"
-                                    DisplayFormat="N"
-                                    ReadOnly="@DataEditContext.IsImported"
-                                    @bind-Value="@DataEditContext.Quantity"/>
-                        <ValidationMessage For="() => DataEditContext.Quantity"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem ColSpanMd="12">
-                    <Template>
-                        <EditFormButtonGroup ComponentMode="@ComponentMode"
-                                             CancelUpdateClicked="@CancelUpdateClick"
-                                             @bind-SubmitClick="@SubmitClick"
-                                             @bind-SaveAndClose="@SaveAndClose"/>
-                    </Template>
-                </DxFormLayoutItem>
-            </DxFormLayout>
-        </EditForm>
-    </div>
+                                       @bind-Text="@DataEditContext.ProductCode"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Stockroom" ColSpanMd="3">
+                        <Template>
+                            @if (IsManual)
+                            {
+                                <BlazoredTypeahead SearchMethod="SearchStockrooms"
+                                                   EnableDropDown="true"
+                                                   Context="stockroomContext"
+                                                   placeholder="Type to search..."
+                                                   @bind-Value="SelectedStockroom">
+                                    <SelectedTemplate>
+                                        @stockroomContext.Name
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @stockroomContext.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => DataEditContext.StockroomId"/>
+                            }
+                            else
+                            {
+                                <DxTextBox ReadOnly="true"
+                                           @bind-Text="@DataEditContext.StockroomName"/>
+                            }
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Location" ColSpanMd="3">
+                        <Template>
+                            @if (DataEditContext.IsImported)
+                            {
+                                <DxTextBox ReadOnly="true"
+                                           @bind-Text="@DataEditContext.StockLocationName"/>
+                            }
+                            else
+                            {
+                                <BlazoredTypeahead SearchMethod="SearchStockLocations"
+                                                   EnableDropDown="true"
+                                                   Context="locationContext"
+                                                   placeholder="Type to search..."
+                                                   @bind-Value="SelectedStockLocation">
+                                    <SelectedTemplate>
+                                        @locationContext.Location
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @locationContext.Location
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            }
+                            <ValidationMessage For="() => DataEditContext.StockLocationId"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Package" ColSpanMd="3">
+                        <Template>
+                            @if (DataEditContext.IsImported)
+                            {
+                                <DxTextBox ReadOnly="true"
+                                           @bind-Text="@DataEditContext.PackageTypeCode"/>
+                            }
+                            else
+                            {
+                                <BlazoredTypeahead SearchMethod="SearchPackageTypes"
+                                                   EnableDropDown="true"
+                                                   Context="packageContext"
+                                                   placeholder="Type to search..."
+                                                   @bind-Value="SelectedPackageType">
+                                    <SelectedTemplate>
+                                        @packageContext.Code
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @packageContext.Code
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            }
+                            <ValidationMessage For="() => DataEditContext.PackageTypeId"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Lot Number" ColSpanMd="3">
+                        <Template>
+                            <DxTextBox ReadOnly="@DataEditContext.IsImported"
+                                       @bind-Text="@DataEditContext.LotNumber"/>
+                            <ValidationMessage For="() => DataEditContext.LotNumber"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Package Number" ColSpanMd="3">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="999999"
+                                        MinValue="1"
+                                        Increment="1"
+                                        DisplayFormat="N0"
+                                        ReadOnly="@DataEditContext.IsImported"
+                                        @bind-Value="@DataEditContext.PackageNumber"/>
+                            <ValidationMessage For="() => DataEditContext.PackageNumber"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Pallet No." ColSpanMd="3">
+                        <Template>
+                            <DxTextBox ReadOnly="@DataEditContext.IsImported"
+                                       @bind-Text="@DataEditContext.PalletNo"/>
+                            <ValidationMessage For="() => DataEditContext.PalletNo"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Quantity" ColSpanMd="3">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="999999.9999m"
+                                        MinValue="0m"
+                                        Increment="0.0001m"
+                                        DisplayFormat="N"
+                                        ReadOnly="@DataEditContext.IsImported"
+                                        @bind-Value="@DataEditContext.Quantity"/>
+                            <ValidationMessage For="() => DataEditContext.Quantity"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="12">
+                        <Template>
+                            <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                                 CancelUpdateClicked="@CancelUpdateClick"
+                                                 @bind-SubmitClick="@SubmitClick"
+                                                 @bind-SaveAndClose="@SaveAndClose"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditForm>
+        </div>
+    }
 }

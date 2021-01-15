@@ -246,11 +246,9 @@ namespace Tpk.DataServices.Server.Controllers
                     var customerProductPackageCollection =
                         customerProductPackages?.ToList() ?? new List<CustomerProductPackage>();
 
-                    if (customerProductPackageCollection.Count > 0)
-                    {
-                        condition3 =
-                            $"{nameof(Stock.PackageTypeId)} IN ({string.Join(",", customerProductPackageCollection.Select(c => c.PackageTypeId.ToString()))})";
-                    }
+                    condition3 = customerProductPackageCollection.Count > 0
+                        ? $"{nameof(Stock.PackageTypeId)} IN ({string.Join(",", customerProductPackageCollection.Select(c => c.PackageTypeId.ToString()))})"
+                        : null;
                 }
 
                 // Get all stock available

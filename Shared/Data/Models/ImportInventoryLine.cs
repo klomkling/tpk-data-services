@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Tpk.DataServices.Shared.Data.Models
 {
     [Serializable]
-    public class ImportInventoryLine : TgModelBase
+    public class ImportInventoryLine
     {
         public int InventoryRequestLineId { get; set; }
         public int StockroomId { get; set; }

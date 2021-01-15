@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,8 +12,8 @@ using Tpk.DataServices.Shared.Data.Views;
 
 namespace Tpk.DataServices.Client.Components.Transactions
 {
-    public class TransportationRequestComponentBase : TgComponentBase<TransportationRequestWithDetail, TransportationRequest,
-        TransportationRequestEditContext>
+    public class TransportationRequestComponentBase
+        : TgComponentBase<TransportationRequestWithDetail, TransportationRequest, TransportationRequestEditContext>
     {
         protected TransportationRequestWithDetail TransportationRequestWithDetail { get; set; }
         protected IEnumerable<TgOrderStatuses> OrderStatusCollection { get; set; }
@@ -32,7 +33,7 @@ namespace Tpk.DataServices.Client.Components.Transactions
             DataEditContext.StatusDate = DateTime.Now;
             DataEditContext.DueDate = DateTime.Now;
         }
-
+        
         protected async Task<LoadResult> LoadTransportationRequests(DataSourceLoadOptionsBase loadOptions,
             CancellationToken cancellationToken)
         {

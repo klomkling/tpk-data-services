@@ -44,8 +44,10 @@ namespace Tpk.DataServices.Client.Components.Transactions
 
         protected override async Task OnInitializedAsync()
         {
+            Console.WriteLine("1.Start");
             await InitComponent(TgClaimTypes.InventoryRequests, "api/inventory-requests");
 
+            Console.WriteLine("2.Next");
             RequestStatusCollection = StringEnumeration.GetAll<TgOrderStatuses>();
             RequestTypeCollection = StringEnumeration.GetAll<TgInventoryRequestTypes>(new[] {"M", "N"}, true);
 
@@ -110,6 +112,8 @@ namespace Tpk.DataServices.Client.Components.Transactions
         protected async Task<LoadResult> LoadInventoryRequests(DataSourceLoadOptionsBase loadOptions,
             CancellationToken cancellationToken)
         {
+            if (IsValidating) return default;
+            
             var url = ApiUrl;
             if (string.IsNullOrEmpty(OnlyRequestType) == false)
             {

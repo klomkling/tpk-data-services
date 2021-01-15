@@ -12,6 +12,7 @@ namespace Tpk.DataServices.Server.Services.Impl
             IHttpContextAccessor httpContextAccessor, ILogger<InventoryRequestLineService> logger)
             : base(configuration, options, httpContextAccessor, logger)
         {
+            EnabledSoftDelete = false;
         }
     }
 }

@@ -2,191 +2,198 @@
 
 <ProcessingSpiner Visible="@IsComponentBusy"/>
 
-@if (ComponentMode == ComponentMode.List)
+@if (IsValidating)
 {
-    <div class="position-relative">
-        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
-
-        <WarningModal @bind-IsShowWarning="@IsShowWarning"
-                       WarningMessage="@WarningMessage"
-                       WarningResponse="@HandleWarningResponse"/>
-
-        <DxDataGrid @ref="@Grid"
-                     T="@SupplierOrderLineWithDetail"
-                     CustomData="@LoadSupplierOrderLines"
-                     KeyFieldName="@KeyFieldName"
-                     CssClass="@CssClass"
-                     PageSize="@PageSize"
-                     PageIndex="@PageIndex"
-                     SelectionMode="@SelectionMode"
-                     SelectAllMode="@SelectAllMode"
-                     @bind-MultipleSelectedDataRows="@SelectedCollection"
-                     ShowFilterRow="IsShowFilterRow"
-                     RowClick="@OnRowClick"
-                     LayoutRestoring="@OnLayoutRestoring"
-                     PagerPageSizeSelectorVisible="true"
-                     PagerAllDataRowsItemVisible="true"
-                     PagerAllowedPageSizes="@AllowedPageSizes">
-
-            <HeaderTemplate>
-                <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
-                                 CssClass="@ToolbarCssClass"
-                                 SelectedCount="@SelectedCount"
-                                 RequiredClaimType="@RequiredClaimType"
-                                 OnToolbarClick="@HandleToolbarResponse"
-                                 IsPermanent="@IsPermanent"
-                                 CanEdit="@(IsPermanent == false)"
-                                 CanRestore="@CanRestore"/>
-            </HeaderTemplate>
-
-            <Columns>
-                @* <DxDataGridSelectionColumn Width="60px"/> *@
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.SupplierProductCode)"
-                                  Caption="Product Code"/>
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.ProductCode)"
-                                  Caption="Our Product"/>
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.Description)"
-                                  Caption="Description"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Quantity)"
-                                          Caption="Quantity" Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.UnitName)"
-                                  Caption="Unit" Width="100px"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Price)"
-                                          Caption="Price" Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Amount)"
-                                          Caption="Amount" Width="100px"
-                                          DisplayFormat="N"
-                                          Visible="false"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.DiscountRate)"
-                                          Caption="Discount (%)" Width="100px"
-                                          DisplayFormat="N"
-                                          Visible="false"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.DiscountAmount)"
-                                          Caption="Discount Amt." Width="100px"
-                                          DisplayFormat="N"
-                                          Visible="false"/>
-                <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.NetAmount)"
-                                          Caption="Net Amount" Width="100px"
-                                          DisplayFormat="N"/>
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.Remark)"
-                                  Caption="Remark" Visible="false"/>
-                <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.DeletedStatus)" Caption="Status"
-                                  Width="80px" TextAlignment="DataGridTextAlign.Center"
-                                  Visible="@IsAdmin" ShowInColumnChooser="false"/>
-            </Columns>
-        </DxDataGrid>
-    </div>
+    <LoadingProcess />
 }
 else
 {
-    <div class="card py-2">
-        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-            <FluentValidationValidator/>
-            <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
-                <DxFormLayoutItem Caption="Product" ColSpanMd="4">
-                    <Template>
-                        <BlazoredTypeahead SearchMethod="SearchSupplierProducts"
-                                           @bind-Value="SelectedSupplierProduct"
-                                           Context="supplierProductContext"
-                                           EnableDropDown="true"
-                                           placeholder="Type to search...">
-                            <SelectedTemplate>
-                                @supplierProductContext.Code
-                            </SelectedTemplate>
-                            <ResultTemplate>
-                                @supplierProductContext.Code
-                            </ResultTemplate>
-                        </BlazoredTypeahead>
-                        <ValidationMessage For="() => DataEditContext.SupplierProductId"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Our Product" ColSpanMd="4">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.ProductCode"
-                                    ReadOnly="true"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Description" ColSpanMd="4">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Description"/>
-                        <ValidationMessage For="() => DataEditContext.Description"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="@($"Quantity{UnitName}")" ColSpanMd="4">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="999999.9999m"
-                                    MinValue="0m"
-                                    Increment="0.0001m"
-                                    DisplayFormat="N"
-                                    Value="@DataEditContext.EditQuantity"
-                                    ValueExpression="@(() => DataEditContext.EditQuantity)"
-                                    ValueChanged="@((decimal newQuantity) => OnQuantityChanged(newQuantity))"/>
-                        <ValidationMessage For="() => DataEditContext.Quantity"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Price" ColSpanMd="4">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="9999.9999m"
-                                    MinValue="0m"
-                                    Increment="0.0001m"
-                                    DisplayFormat="N"
-                                    @bind-Value="@DataEditContext.EditPrice"/>
-                        <ValidationMessage For="() => DataEditContext.Price"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Amount" ColSpanMd="4">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.AmountDisplay"
-                                    ReadOnly="true"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Discount (%)" ColSpanMd="4">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="100m"
-                                    MinValue="0m"
-                                    Increment="0.01m"
-                                    DisplayFormat="N"
-                                    @bind-Value="@DataEditContext.EditDiscountRate"/>
-                        <ValidationMessage For="() => DataEditContext.DiscountRate"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Discount Amount" ColSpanMd="4">
-                    <Template>
-                        <DxSpinEdit BindValueMode="BindValueMode.OnInput"
-                                    MaxValue="999999.9999m"
-                                    MinValue="0m"
-                                    Increment="0.0001m"
-                                    DisplayFormat="N"
-                                    @bind-Value="@DataEditContext.EditDiscountAmount"/>
-                        <ValidationMessage For="() => DataEditContext.DiscountAmount"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Net Amount" ColSpanMd="4">
-                    <Template>
-                        <DxTextBox ReadOnly="true"
-                                   @bind-Text="@DataEditContext.NetAmountDisplay"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Remark" ColSpanMd="12">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Remark"/>
-                        <ValidationMessage For="() => DataEditContext.Remark"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem ColSpanMd="12">
-                    <Template>
-                        <EditFormButtonGroup ComponentMode="@ComponentMode"
-                                             CancelUpdateClicked="@CancelUpdateClick"
-                                             @bind-SubmitClick="@SubmitClick"
-                                             @bind-SaveAndClose="@SaveAndClose"/>
-                    </Template>
-                </DxFormLayoutItem>
-            </DxFormLayout>
-        </EditForm>
-    </div>
+    if (ComponentMode == ComponentMode.List)
+    {
+        <div class="position-relative">
+            <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+            <WarningModal WarningMessage="@WarningMessage"
+                          WarningResponse="@HandleWarningResponse"
+                          @bind-IsShowWarning="@IsShowWarning"/>
+
+            <DxDataGrid CustomData="@LoadSupplierOrderLines"
+                        KeyFieldName="@KeyFieldName"
+                        CssClass="@CssClass"
+                        PageSize="@PageSize"
+                        PageIndex="@PageIndex"
+                        SelectionMode="@SelectionMode"
+                        SelectAllMode="@SelectAllMode"
+                        ShowFilterRow="IsShowFilterRow"
+                        RowClick="@OnRowClick"
+                        LayoutRestoring="@OnLayoutRestoring"
+                        PagerPageSizeSelectorVisible="true"
+                        PagerAllDataRowsItemVisible="true"
+                        PagerAllowedPageSizes="@AllowedPageSizes"
+                        @bind-MultipleSelectedDataRows="@SelectedCollection"
+                        @ref="@Grid"
+                        T="@SupplierOrderLineWithDetail">
+
+                <HeaderTemplate>
+                    <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                     CssClass="@ToolbarCssClass"
+                                     SelectedCount="@SelectedCount"
+                                     RequiredClaimType="@RequiredClaimType"
+                                     OnToolbarClick="@HandleToolbarResponse"
+                                     IsPermanent="@IsPermanent"
+                                     CanEdit="@(IsPermanent == false)"
+                                     CanRestore="@CanRestore"/>
+                </HeaderTemplate>
+
+                <Columns>
+                    @* <DxDataGridSelectionColumn Width="60px"/> *@
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.SupplierProductCode)"
+                                      Caption="Product Code"/>
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.ProductCode)"
+                                      Caption="Our Product"/>
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.Description)"
+                                      Caption="Description"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Quantity)"
+                                              Caption="Quantity" Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.UnitName)"
+                                      Caption="Unit" Width="100px"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Price)"
+                                              Caption="Price" Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.Amount)"
+                                              Caption="Amount" Width="100px"
+                                              DisplayFormat="N"
+                                              Visible="false"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.DiscountRate)"
+                                              Caption="Discount (%)" Width="100px"
+                                              DisplayFormat="N"
+                                              Visible="false"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.DiscountAmount)"
+                                              Caption="Discount Amt." Width="100px"
+                                              DisplayFormat="N"
+                                              Visible="false"/>
+                    <DxDataGridSpinEditColumn Field="@nameof(SupplierOrderLineWithDetail.NetAmount)"
+                                              Caption="Net Amount" Width="100px"
+                                              DisplayFormat="N"/>
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.Remark)"
+                                      Caption="Remark" Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(SupplierOrderLineWithDetail.DeletedStatus)" Caption="Status"
+                                      Width="80px" TextAlignment="DataGridTextAlign.Center"
+                                      Visible="@IsAdmin" ShowInColumnChooser="false"/>
+                </Columns>
+            </DxDataGrid>
+        </div>
+    }
+    else
+    {
+        <div class="card py-2">
+            <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+                <FluentValidationValidator/>
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Product" ColSpanMd="4">
+                        <Template>
+                            <BlazoredTypeahead SearchMethod="SearchSupplierProducts"
+                                               @bind-Value="SelectedSupplierProduct"
+                                               Context="supplierProductContext"
+                                               EnableDropDown="true"
+                                               placeholder="Type to search...">
+                                <SelectedTemplate>
+                                    @supplierProductContext.Code
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @supplierProductContext.Code
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => DataEditContext.SupplierProductId"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Our Product" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.ProductCode"
+                                        ReadOnly="true"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Description" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Description"/>
+                            <ValidationMessage For="() => DataEditContext.Description"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="@($"Quantity{UnitName}")" ColSpanMd="4">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="999999.9999m"
+                                        MinValue="0m"
+                                        Increment="0.0001m"
+                                        DisplayFormat="N"
+                                        Value="@DataEditContext.EditQuantity"
+                                        ValueExpression="@(() => DataEditContext.EditQuantity)"
+                                        ValueChanged="@((decimal newQuantity) => OnQuantityChanged(newQuantity))"/>
+                            <ValidationMessage For="() => DataEditContext.Quantity"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Price" ColSpanMd="4">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="9999.9999m"
+                                        MinValue="0m"
+                                        Increment="0.0001m"
+                                        DisplayFormat="N"
+                                        @bind-Value="@DataEditContext.EditPrice"/>
+                            <ValidationMessage For="() => DataEditContext.Price"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Amount" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.AmountDisplay"
+                                        ReadOnly="true"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Discount (%)" ColSpanMd="4">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="100m"
+                                        MinValue="0m"
+                                        Increment="0.01m"
+                                        DisplayFormat="N"
+                                        @bind-Value="@DataEditContext.EditDiscountRate"/>
+                            <ValidationMessage For="() => DataEditContext.DiscountRate"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Discount Amount" ColSpanMd="4">
+                        <Template>
+                            <DxSpinEdit BindValueMode="BindValueMode.OnInput"
+                                        MaxValue="999999.9999m"
+                                        MinValue="0m"
+                                        Increment="0.0001m"
+                                        DisplayFormat="N"
+                                        @bind-Value="@DataEditContext.EditDiscountAmount"/>
+                            <ValidationMessage For="() => DataEditContext.DiscountAmount"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Net Amount" ColSpanMd="4">
+                        <Template>
+                            <DxTextBox ReadOnly="true"
+                                       @bind-Text="@DataEditContext.NetAmountDisplay"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Remark" ColSpanMd="12">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Remark"/>
+                            <ValidationMessage For="() => DataEditContext.Remark"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="12">
+                        <Template>
+                            <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                                 CancelUpdateClicked="@CancelUpdateClick"
+                                                 @bind-SubmitClick="@SubmitClick"
+                                                 @bind-SaveAndClose="@SaveAndClose"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditForm>
+        </div>
+    }
 }

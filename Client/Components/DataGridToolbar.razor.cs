@@ -8,8 +8,9 @@ namespace Tpk.DataServices.Client.Components
 {
     public class DataGridToolbarBase : ComponentBase
     {
-        private bool _addButtonVisible = true;
         private string _cssClass = "mb-2";
+        private bool _clearButtonVisible = true;
+        private bool _addButtonVisible = true;
         private bool _deleteButtonVisible = true;
         private bool _editButtonVisible = true;
 
@@ -117,6 +118,18 @@ namespace Tpk.DataServices.Client.Components
         }
 
         [Parameter]
+        public bool ClearButtonVisible
+        {
+            get => _clearButtonVisible;
+            set
+            {
+                if (Equals(_clearButtonVisible, value)) return;
+                _clearButtonVisible = value;
+                StateHasChanged();
+            }
+        }
+        
+        [Parameter]
         public bool AddButtonVisible
         {
             get => _addButtonVisible;
@@ -185,6 +198,16 @@ namespace Tpk.DataServices.Client.Components
             IsRestoreButtonVisible = _isAdmin;
         }
 
+        protected void OnClearButtonClick(ToolbarItemClickEventArgs args)
+        {
+            var eventArgs = new TgDataGridToolbarClickEventArgs
+            {
+                Name = "Clear",
+                MouseEventArgs = args.MouseEventArgs
+            };
+            OnToolbarClick.InvokeAsync(eventArgs);
+        }
+        
         protected void OnAddButtonClick(ToolbarItemClickEventArgs args)
         {
             var eventArgs = new TgDataGridToolbarClickEventArgs

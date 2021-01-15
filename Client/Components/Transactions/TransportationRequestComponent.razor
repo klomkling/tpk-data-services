@@ -2,204 +2,209 @@
 
 <ProcessingSpiner Visible="@IsComponentBusy"/>
 
-@if (ComponentMode == ComponentMode.List)
+@if (IsValidating)
 {
-    <div class="position-relative">
-        <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
-    </div>
-
-    <WarningModal WarningMessage="@WarningMessage"
-                  WarningResponse="@HandleWarningResponse"
-                  @bind-IsShowWarning="@IsShowWarning"/>
-
-    <DxDataGrid CustomData="@LoadTransportationRequests"
-                KeyFieldName="@KeyFieldName"
-                CssClass="@CssClass"
-                PageSize="@PageSize"
-                PageIndex="@PageIndex"
-                SelectionMode="@SelectionMode"
-                SelectAllMode="@SelectAllMode"
-                ShowFilterRow="IsShowFilterRow"
-                RowClick="@OnRowClick"
-                LayoutRestoring="@OnLayoutRestoring"
-                PagerPageSizeSelectorVisible="true"
-                PagerAllDataRowsItemVisible="true"
-                PagerAllowedPageSizes="@AllowedPageSizes"
-                T="@TransportationRequestWithDetail"
-                @ref="@Grid"
-                @bind-MultipleSelectedDataRows="@SelectedCollection">
-
-        <HeaderTemplate>
-            <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
-                             CssClass="@ToolbarCssClass"
-                             SelectedCount="@SelectedCount"
-                             RequiredClaimType="@RequiredClaimType"
-                             OnToolbarClick="@HandleToolbarResponse"
-                             CanRestore="@CanRestore">
-            </DataGridToolbar>
-        </HeaderTemplate>
-
-        <Columns>
-            @* <DxDataGridSelectionColumn Width="60px"/> *@
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.RequestNumber)"
-                              Caption="No."
-                              Width="100px">
-                <DisplayTemplate>
-                    @{
-                        var requestNumber = ((TransportationRequestWithDetail) context).RequestNumber;
-                        var requestNumb = requestNumber > 0 ? $"{requestNumber:000000}" : null;
-                        <span>@requestNumb</span>
-                    }
-                </DisplayTemplate>
-            </DxDataGridColumn>
-            <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.RequestDate)"
-                                      DisplayFormat="dd/MM/yyyy"
-                                      Width="100px"
-                                      Caption="Date"/>
-            <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.DueDate)"
-                                      DisplayFormat="dd/MM/yyyy"
-                                      Width="100px"
-                                      Caption="Due Date"/>
-            <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.CompletedDate)"
-                                      DisplayFormat="dd/MM/yyyy"
-                                      Width="100px"
-                                      Caption="Completed Date"
-                                      Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.StatusName)"
-                              Caption="Status"
-                              Width="100px"/>
-            <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.StatusDate)"
-                                      DisplayFormat="dd/MM/yyyy"
-                                      Width="100px"
-                                      Caption="Status Date"
-                                      Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.RecipientName)"
-                              Caption="Recipient Name"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Address)"
-                              Caption="Address"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.SubDistrict)"
-                              Caption="Sub-District"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.District)"
-                              Caption="District"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Province)"
-                              Caption="Province"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.PostalCode)"
-                              Caption="Postal Code"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Contact)"
-                              Caption="Contact"
-                              Visible="false"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Remark)"
-                              Caption="Remark"/>
-            <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.DeletedStatus)"
-                              TextAlignment="DataGridTextAlign.Center"
-                              Caption="Status"
-                              Width="80px"
-                              Visible="@IsAdmin"
-                              ShowInColumnChooser="false"/>
-        </Columns>
-    </DxDataGrid>
+    <LoadingProcess />
 }
 else
 {
-    <div class="card py-2">
-        <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
-            <FluentValidationValidator/>
-            <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
-                <DxFormLayoutItem Caption="Request No." ColSpanMd="3" CssClass="@(ComponentMode == ComponentMode.Add ? "with-tooltip" : null)">
-                    <Template>
-                        <DxTextBox ReadOnly="true"
-                                   @bind-Text="@DataEditContext.OrderNumberDisplay"/>
-                        <ValidationMessage For="() => DataEditContext.RequestNumber"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Date" ColSpanMd="3">
-                    <Template>
-                        <DxDateEdit DisplayFormat="dd/MM/yyyy"
-                                    Format="dd/MM/yyyy"
-                                    ReadOnly="true"
-                                    @bind-Date="@DataEditContext.RequestDate"/>
-                        <ValidationMessage For="() => DataEditContext.RequestDate"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Due Date" ColSpanMd="3">
-                    <Template>
-                        <DxDateEdit DisplayFormat="dd/MM/yyyy"
-                                    Format="dd/MM/yyyy"
-                                    ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
-                                    @bind-Date="@DataEditContext.DueDate"/>
-                        <ValidationMessage For="() => DataEditContext.DueDate"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Order Status" ColSpanMd="3">
-                    <Template>
-                        <DxComboBox Data="@OrderStatusCollection"
-                                    ValueFieldName="@nameof(TgOrderStatuses.Value)"
-                                    TextFieldName="@nameof(TgOrderStatuses.DisplayName)"
-                                    CssClass="@(SelectedItem?.IsFromInventoryRequest ?? false ? null : "normal-combobox")"
-                                    ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
-                                    @bind-Value="@DataEditContext.Status"/>
-                        <ValidationMessage For="() => DataEditContext.Status"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Recipient Name" ColSpanMd="6">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.RecipientName"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Address" ColSpanMd="6">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Address"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Sub-District" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.SubDistrict"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="District" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.District"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Province" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Province"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Postal Code" ColSpanMd="3">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.PostalCode"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Contact" ColSpanMd="6">
-                    <Template>
-                        <DxTextBox @bind-Text="@DataEditContext.Contact"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="Remark" ColSpanMd="6">
-                    <Template>
-                        <DxTextBox ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
-                                   @bind-Text="@DataEditContext.Remark"/>
-                        <ValidationMessage For="() => DataEditContext.Remark"/>
-                    </Template>
-                </DxFormLayoutItem>
-                <DxFormLayoutItem ColSpanMd="12">
-                    <Template>
-                        <EditFormButtonGroup ComponentMode="@ComponentMode"
-                                             SaveAndCloseOnlyWhenAdd="true"
-                                             CancelUpdateClicked="@CancelUpdateClick"
-                                             @bind-SubmitClick="@SubmitClick"
-                                             @bind-SaveAndClose="@SaveAndClose">
-                            <span class="mr-auto help-text @(ComponentMode == ComponentMode.Edit ? "d-none" : null)">* Auto-generate after saved.</span>
-                        </EditFormButtonGroup>
-                    </Template>
-                </DxFormLayoutItem>
-            </DxFormLayout>
-        </EditForm>
-    </div>
+    if (ComponentMode == ComponentMode.List)
+    {
+        <div class="position-relative">
+            <div class="@(IsDetailBusy ? "component-backdrop" : null)"></div>
+
+            <WarningModal WarningMessage="@WarningMessage"
+                          WarningResponse="@HandleWarningResponse"
+                          @bind-IsShowWarning="@IsShowWarning"/>
+
+            <DxDataGrid CustomData="@LoadTransportationRequests"
+                        KeyFieldName="@KeyFieldName"
+                        CssClass="@CssClass"
+                        PageSize="@PageSize"
+                        PageIndex="@PageIndex"
+                        SelectionMode="@SelectionMode"
+                        SelectAllMode="@SelectAllMode"
+                        ShowFilterRow="IsShowFilterRow"
+                        RowClick="@OnRowClick"
+                        LayoutRestoring="@OnLayoutRestoring"
+                        PagerPageSizeSelectorVisible="true"
+                        PagerAllDataRowsItemVisible="true"
+                        PagerAllowedPageSizes="@AllowedPageSizes"
+                        @bind-MultipleSelectedDataRows="@SelectedCollection"
+                        @ref="@Grid"
+                        T="@TransportationRequestWithDetail">
+
+                <HeaderTemplate>
+                    <DataGridToolbar IsBusy="@(IsBusy || IsMasterBusy || IsDetailBusy)"
+                                     CssClass="@ToolbarCssClass"
+                                     SelectedCount="@SelectedCount"
+                                     RequiredClaimType="@RequiredClaimType"
+                                     OnToolbarClick="@HandleToolbarResponse">
+                    </DataGridToolbar>
+                </HeaderTemplate>
+
+                <Columns>
+                    @* <DxDataGridSelectionColumn Width="60px"/> *@
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.RequestNumber)"
+                                      Caption="No."
+                                      Width="100px">
+                        <DisplayTemplate>
+                            @{
+                                var requestNumber = $"{((TransportationRequestWithDetail) context).RequestNumber:000000}";
+                                <span>@requestNumber</span>
+                            }
+                        </DisplayTemplate>
+                    </DxDataGridColumn>
+                    <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.RequestDate)"
+                                              DisplayFormat="dd/MM/yyyy"
+                                              Width="100px"
+                                              Caption="Date"/>
+                    <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.DueDate)"
+                                              DisplayFormat="dd/MM/yyyy"
+                                              Width="100px"
+                                              Caption="Due Date"/>
+                    <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.CompletedDate)"
+                                              DisplayFormat="dd/MM/yyyy"
+                                              Width="100px"
+                                              Caption="Completed Date"
+                                              Visible="false"/>
+                    <DxDataGridDateEditColumn Field="@nameof(TransportationRequestWithDetail.StatusDate)"
+                                              DisplayFormat="dd/MM/yyyy"
+                                              Width="100px"
+                                              Caption="Status Date"
+                                              Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.StatusName)"
+                                      Caption="Status"
+                                      Width="100px"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.RecipientName)"
+                                      Caption="Recipient Name"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Address)"
+                                      Caption="Address"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.SubDistrict)"
+                                      Caption="Sub-District"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.District)"
+                                      Caption="District"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Province)"
+                                      Caption="Province"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.PostalCode)"
+                                      Caption="Postal Code"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Contact)"
+                                      Caption="Contact"
+                                      Visible="false"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.Remark)"
+                                      Caption="Remark"/>
+                    <DxDataGridColumn Field="@nameof(TransportationRequestWithDetail.DeletedStatus)"
+                                      Caption="Status"
+                                      Width="80px"
+                                      TextAlignment="DataGridTextAlign.Center"
+                                      Visible="@IsAdmin"
+                                      ShowInColumnChooser="false"/>
+                </Columns>
+            </DxDataGrid>
+        </div>
+    }
+    else
+    {
+        <div class="card py-2">
+            <EditForm Model="@DataEditContext" Context="editFormContext" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="@HandleInvalidSubmit">
+                <FluentValidationValidator/>
+                <DxFormLayout CaptionPosition="@CaptionPosition.Vertical" ItemSizeMode="SizeMode.Medium" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Request No." ColSpanMd="3" CssClass="@(ComponentMode == ComponentMode.Add ? "with-tooltip" : null)">
+                        <Template>
+                            <DxTextBox ReadOnly="true"
+                                       @bind-Text="@DataEditContext.OrderNumberDisplay"/>
+                            <ValidationMessage For="() => DataEditContext.RequestNumber"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Date" ColSpanMd="3">
+                        <Template>
+                            <DxDateEdit DisplayFormat="dd/MM/yyyy"
+                                        Format="dd/MM/yyyy"
+                                        ReadOnly="true"
+                                        @bind-Date="@DataEditContext.RequestDate"/>
+                            <ValidationMessage For="() => DataEditContext.RequestDate"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Due Date" ColSpanMd="3">
+                        <Template>
+                            <DxDateEdit DisplayFormat="dd/MM/yyyy"
+                                        Format="dd/MM/yyyy"
+                                        ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
+                                        @bind-Date="@DataEditContext.DueDate"/>
+                            <ValidationMessage For="() => DataEditContext.DueDate"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Order Status" ColSpanMd="3">
+                        <Template>
+                            <DxComboBox Data="@OrderStatusCollection"
+                                        ValueFieldName="@nameof(TgOrderStatuses.Value)"
+                                        TextFieldName="@nameof(TgOrderStatuses.DisplayName)"
+                                        CssClass="@(SelectedItem?.IsFromInventoryRequest ?? false ? null : "normal-combobox")"
+                                        ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
+                                        @bind-Value="@DataEditContext.Status"/>
+                            <ValidationMessage For="() => DataEditContext.Status"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Recipient Name" ColSpanMd="6">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.RecipientName"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Address" ColSpanMd="6">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Address"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Sub-District" ColSpanMd="3">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.SubDistrict"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="District" ColSpanMd="3">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.District"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Province" ColSpanMd="3">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Province"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Postal Code" ColSpanMd="3">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.PostalCode"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Contact" ColSpanMd="6">
+                        <Template>
+                            <DxTextBox @bind-Text="@DataEditContext.Contact"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Remark" ColSpanMd="6">
+                        <Template>
+                            <DxTextBox ReadOnly="@(SelectedItem?.IsFromInventoryRequest ?? false)"
+                                       @bind-Text="@DataEditContext.Remark"/>
+                            <ValidationMessage For="() => DataEditContext.Remark"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="12">
+                        <Template>
+                            <EditFormButtonGroup ComponentMode="@ComponentMode"
+                                                 SaveAndCloseOnlyWhenAdd="true"
+                                                 CancelUpdateClicked="@CancelUpdateClick"
+                                                 @bind-SubmitClick="@SubmitClick"
+                                                 @bind-SaveAndClose="@SaveAndClose">
+                                <span class="mr-auto help-text @(ComponentMode == ComponentMode.Edit ? "d-none" : null)">* Auto-generate after saved.</span>
+                            </EditFormButtonGroup>
+                        </Template>
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditForm>
+        </div>
+    }
 }

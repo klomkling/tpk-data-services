@@ -7,6 +7,8 @@ namespace Tpk.DataServices.Server.Services
 {
     public interface IUserService : IServiceBase<User>
     {
+        User GetByIdPassword(int id, string password);
+        Task<User> GetByIdPasswordAsync(int id, string password);
         User GetByUsername(string username, bool isActive = true);
         Task<User> GetByUsernameAsync(string username, bool isActive = true);
         User GetByEmail(string email, bool isActive = true);

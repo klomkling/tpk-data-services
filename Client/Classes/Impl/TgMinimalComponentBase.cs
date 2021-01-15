@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Blazored.Toast.Services;
@@ -13,7 +14,7 @@ namespace Tpk.DataServices.Client.Classes.Impl
 
         [Inject] protected IApiService ApiService { get; set; }
         [Inject] protected IUserService UserService { get; set; }
-        [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
         [Inject] protected IToastService ToastService { get; set; }
         [Inject] protected ILocalStorageService LocalStorageService { get; set; }
 
@@ -35,6 +36,8 @@ namespace Tpk.DataServices.Client.Classes.Impl
         protected bool CanRestore { get; set; }
         protected string ApiUrl { get; set; }
         protected bool IsValidating { get; set; } = true;
+        protected bool IsFreeAccess { get; set; }
+        protected bool IsOnlyAdmin { get; set; }
 
         #endregion
 
@@ -77,10 +80,15 @@ namespace Tpk.DataServices.Client.Classes.Impl
             if (ApiService.IsSessionExpired) RedirectToLoginPage();
             if (ApiService.IsError) RedirectToErrorPage(ApiService.ErrorMessage);
 
-            CanEdit = ((permission?.Value ?? -1) >= TgPermissions.Update.Value || IsAdmin) && ReadOnly == false;
-            if ((permission?.Value ?? -1) < TgPermissions.View.Value && IsAdmin == false) RedirectToAccessDeniedPage();
+            if (IsOnlyAdmin && IsAdmin == false) RedirectToAccessDeniedPage();
             
-            // IsValidating = permission != null || IsAdmin;
+            if (IsFreeAccess == false)
+            {
+                CanEdit = ((permission?.Value ?? -1) >= TgPermissions.Update.Value || IsAdmin) && ReadOnly == false;
+                if ((permission?.Value ?? -1) < TgPermissions.View.Value && IsAdmin == false)
+                    RedirectToAccessDeniedPage();
+            }
+
             IsValidating = false;
         }
 

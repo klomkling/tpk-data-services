@@ -41,6 +41,26 @@ namespace Tpk.DataServices.Server.Controllers
             return await base.GetAllAsync(loadOptions);
         }
 
+        [HttpGet("logged-users")]
+        [AuthorizeRequired(RestrictRoles.Administrator, RestrictRoles.Director)]
+        public async Task<IActionResult> GetActiveUsersAsync(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                var condition = $"CONVERT (DATE, LastVisited) = CONVERT (DATE, GETDATE ())";
+                var collection = await _userService.GetAllAsync<User>(false, null, condition);
+                
+                if (_userService.IsError) return await ErrorResponse(_userService.Exception.Message);
+                
+                var result = await Task.Run(() => DataSourceLoader.Load(collection.AsQueryable(), loadOptions));
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                return await ErrorResponse(e.Message);
+            }
+        }
+
         [HttpGet("{id:int}")]
         public override async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -80,6 +100,22 @@ namespace Tpk.DataServices.Server.Controllers
         public override Task<IActionResult> UpdateAsync([FromBody] User model)
         {
             return base.UpdateAsync(model);
+        }
+        
+        [HttpPatch("update-password")]
+        public async Task<IActionResult> UpdatePasswordAsync([FromBody] UpdatePasswordRequest model)
+        {
+            // Get user
+            var user = await _userService.GetByIdPasswordAsync(model.UserId, model.CurrentPassword);
+            if (_userService.IsError) return await ErrorResponse(_userService.Exception.Message);
+
+            user.PasswordHash = $"NEW:{model.NewPassword}";
+            await _userService.InsertUpdateAsync(user);
+            if (IsError) return await ErrorResponse(_userService.Exception.Message);
+
+            model.IsSuccess = true;
+            
+            return Ok(model);
         }
 
         [HttpDelete]
